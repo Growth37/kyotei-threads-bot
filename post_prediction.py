@@ -120,7 +120,11 @@ def build_post(race: dict) -> str:
         return CLASSES.get(int(b.get("racer_class_number") or 4), "?")
 
     h, t, s = lane(honmei), lane(taikou), lane(sanban)
-    trifecta = f"{h}-{t}-{s} / {h}-{s}-{t}"
+    # ◎○▲のボックス6点
+    from itertools import permutations
+    combos = [f"{a}-{b}-{c}" for a, b, c in permutations([h, t, s])]
+    trifecta_l1 = " / ".join(combos[:3])
+    trifecta_l2 = " / ".join(combos[3:])
 
     title = race.get("race_title") or ""
     if len(title) > 20:
@@ -134,7 +138,9 @@ def build_post(race: dict) -> str:
         f"○ {t}号艇 {name(taikou)} ({cls(taikou)})",
         f"▲ {s}号艇 {name(sanban)} ({cls(sanban)})",
         "",
-        f"3連単: {trifecta}",
+        f"3連単6点 (◎○▲ボックス):",
+        trifecta_l1,
+        trifecta_l2,
         "",
         "※出走表データからの機械的な予想です。舟券は自己責任で🙏",
         "#競艇 #ボートレース #競艇予想",
