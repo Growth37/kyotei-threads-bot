@@ -108,7 +108,7 @@ def build_post(race: dict) -> str:
     closed = race["race_closed_at"][11:16]  # HH:MM
 
     boats = sorted(race["boats"], key=score_boat, reverse=True)
-    honmei, taikou, sanban = boats[0], boats[1], boats[2]
+    honmei, taikou, sanban, yonban = boats[0], boats[1], boats[2], boats[3]
 
     def lane(b):
         return int(b["racer_boat_number"])
@@ -120,9 +120,12 @@ def build_post(race: dict) -> str:
         return CLASSES.get(int(b.get("racer_class_number") or 4), "?")
 
     h, t, s = lane(honmei), lane(taikou), lane(sanban)
-    # ◎○▲のボックス6点
-    from itertools import permutations
-    combos = [f"{a}-{b}-{c}" for a, b, c in permutations([h, t, s])]
+    f4 = lane(yonban)
+    # ◎○▲△のフォーメーション6点
+    combos = [
+        f"{h}-{t}-{s}", f"{h}-{t}-{f4}", f"{h}-{f4}-{s}",
+        f"{t}-{s}-{f4}", f"{f4}-{h}-{t}", f"{f4}-{h}-{s}",
+    ]
     trifecta_l1 = " / ".join(combos[:3])
     trifecta_l2 = " / ".join(combos[3:])
 
@@ -137,12 +140,13 @@ def build_post(race: dict) -> str:
         f"◎ {h}号艇 {name(honmei)} ({cls(honmei)})",
         f"○ {t}号艇 {name(taikou)} ({cls(taikou)})",
         f"▲ {s}号艇 {name(sanban)} ({cls(sanban)})",
+        f"△ {f4}号艇 {name(yonban)} ({cls(yonban)})",
         "",
-        f"3連単6点 (◎○▲ボックス):",
+        "3連単6点:",
         trifecta_l1,
         trifecta_l2,
         "",
-        "※出走表データからの機械的な予想です。舟券は自己責任で🙏",
+        "※舟券は自己責任で🙏",
         "#競艇 #ボートレース #競艇予想",
     ]
     text = "\n".join(l for l in lines if l is not None)
