@@ -2,12 +2,10 @@ name: 競艇予想をThreadsに投稿
 
 on:
   schedule:
-    # UTC表記 (JST-9時間)。月〜金の 09:00 / 11:30 / 14:00 / 16:30 / 19:00 JST
-    - cron: '0 0 * * 1-5'
-    - cron: '30 2 * * 1-5'
-    - cron: '0 5 * * 1-5'
-    - cron: '30 7 * * 1-5'
-    - cron: '0 10 * * 1-5'
+    # UTC表記 (JST-9時間)。月〜金の 11:37 / 15:08 / 18:02 JST
+    - cron: '37 2 * * 1-5'
+    - cron: '8 6 * * 1-5'
+    - cron: '2 9 * * 1-5'
   workflow_dispatch:
     inputs:
       dry_run:
