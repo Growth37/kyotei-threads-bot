@@ -110,6 +110,17 @@ def get_user_id(token: str) -> str:
     return me["id"]
 
 
+def fetch_permalink(post_id: str, token: str):
+    """投稿のURL(permalink)を取得。失敗時はNone."""
+    try:
+        qs = urllib.parse.urlencode({"fields": "permalink", "access_token": token})
+        data = http_get_json(f"{THREADS_API}/{post_id}?{qs}")
+        return data.get("permalink")
+    except Exception as e:  # noqa: BLE001
+        print(f"  permalink取得失敗 ({post_id}): {e}")
+        return None
+
+
 def post_hit(entry: dict, payout, token: str, user_id: str) -> bool:
     lines = [
         "🎯的中!!",
@@ -117,6 +128,9 @@ def post_hit(entry: dict, payout, token: str, user_id: str) -> bool:
     ]
     if payout:
         lines.append(f"配当 {int(payout):,}円")
+    permalink = fetch_permalink(entry["post_id"], token)
+    if permalink:
+        lines += ["", "👇予想はこちら", permalink]
     lines += ["", "※舟券は自己責任で🙏", "#競艇 #ボートレース #競艇予想"]
     text = "\n".join(lines)
     try:
