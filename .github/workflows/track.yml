@@ -1,0 +1,41 @@
+name: 表示回数と的中チェック
+
+on:
+  schedule:
+    # JST 11:05〜19:35 は30分おき、20:05〜23:05 は1時間おき (月〜土)
+    - cron: '5,35 2-10 * * 1-6'
+    - cron: '5 11-14 * * 1-6'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 依存ライブラリ
+        run: pip install openpyxl --quiet
+      - name: 表示回数の記録と的中チェック
+        env:
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+        run: python track_metrics.py
+      - name: 結果をコミット
+        run: |
+          git config user.name "kyotei-bot"
+          git config user.email "kyotei-bot@users.noreply.github.com"
+          for f in posts_log.json metrics.csv metrics.xlsx; do
+            [ -f "$f" ] && git add "$f"
+          done; true
+          if git diff --cached --quiet; then
+            echo "変更なし"
+            exit 0
+          fi
+          git commit -m "metrics: 表示回数/的中結果を更新"
+          git pull --rebase origin main
+          git push
