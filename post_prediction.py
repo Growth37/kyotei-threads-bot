@@ -129,9 +129,11 @@ def build_post(race: dict) -> str:
     h, t, s = lane(honmei), lane(taikou), lane(sanban)
     f4 = lane(yonban)
     # ◎○▲△のフォーメーション6点
-    combos = build_combos(h, t, s, f4)
-    trifecta_l1 = " / ".join(combos[:3])
-    trifecta_l2 = " / ".join(combos[3:])
+    combos = sorted(
+        build_combos(h, t, s, f4),
+        key=lambda c: tuple(int(x) for x in c.split("-")),
+    )
+    combo_lines = ["・" + c for c in combos]
 
     title = race.get("race_title") or ""
     if len(title) > 20:
@@ -147,8 +149,7 @@ def build_post(race: dict) -> str:
         f"△ {f4}号艇 {name(yonban)} ({cls(yonban)})",
         "",
         "3連単6点:",
-        trifecta_l1,
-        trifecta_l2,
+        *combo_lines,
         "",
         "※舟券は自己責任で🙏",
         "#競艇 #ボートレース #競艇予想",
