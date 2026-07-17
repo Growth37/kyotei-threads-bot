@@ -13,6 +13,9 @@ on:
         required: false
         default: '0'
 
+permissions:
+  contents: write
+
 jobs:
   post:
     runs-on: ubuntu-latest
@@ -27,3 +30,15 @@ jobs:
           THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
           DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
         run: python post_prediction.py
+      - name: 投稿ログをコミット
+        run: |
+          git config user.name "kyotei-bot"
+          git config user.email "kyotei-bot@users.noreply.github.com"
+          [ -f posts_log.json ] && git add posts_log.json; true
+          if git diff --cached --quiet; then
+            echo "ログ変更なし"
+            exit 0
+          fi
+          git commit -m "log: 投稿記録を更新"
+          git pull --rebase origin main
+          git push
