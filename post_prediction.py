@@ -102,6 +102,13 @@ def pick_race(programs: list, now: datetime):
     return best[1]
 
 
+def build_combos(h: int, t: int, s: int, f4: int) -> list:
+    return [
+        f"{h}-{t}-{s}", f"{h}-{t}-{f4}", f"{h}-{f4}-{s}",
+        f"{t}-{s}-{f4}", f"{f4}-{h}-{t}", f"{f4}-{h}-{s}",
+    ]
+
+
 def build_post(race: dict) -> str:
     stadium = STADIUMS.get(int(race["race_stadium_number"]), "不明")
     rno = int(race["race_number"])
@@ -122,10 +129,7 @@ def build_post(race: dict) -> str:
     h, t, s = lane(honmei), lane(taikou), lane(sanban)
     f4 = lane(yonban)
     # ◎○▲△のフォーメーション6点
-    combos = [
-        f"{h}-{t}-{s}", f"{h}-{t}-{f4}", f"{h}-{f4}-{s}",
-        f"{t}-{s}-{f4}", f"{f4}-{h}-{t}", f"{f4}-{h}-{s}",
-    ]
+    combos = build_combos(h, t, s, f4)
     trifecta_l1 = " / ".join(combos[:3])
     trifecta_l2 = " / ".join(combos[3:])
 
@@ -180,6 +184,32 @@ def post_to_threads(text: str, user_id: str, token: str):
     if not result.get("id"):
         raise RuntimeError(f"公開に失敗: {result}")
     print(f"投稿完了! post id = {result['id']}")
+    return result["id"]
+
+
+def append_log(post_id: str, race: dict, now):
+    """posts_log.json に投稿記録を追記する(トラッキング用)."""
+    log_file = "posts_log.json"
+    log = []
+    if os.path.exists(log_file):
+        with open(log_file, encoding="utf-8") as f:
+            log = json.load(f)
+    boats = sorted(race["boats"], key=score_boat, reverse=True)
+    lanes = [int(b["racer_boat_number"]) for b in boats[:4]]
+    log.append({
+        "post_id": post_id,
+        "posted_at": now.isoformat(timespec="seconds"),
+        "race_date": race.get("race_date") or now.strftime("%Y-%m-%d"),
+        "stadium_number": int(race["race_stadium_number"]),
+        "stadium": STADIUMS.get(int(race["race_stadium_number"]), "不明"),
+        "race_number": int(race["race_number"]),
+        "race_closed_at": race["race_closed_at"],
+        "combos": build_combos(*lanes),
+        "views": {},
+    })
+    with open(log_file, "w", encoding="utf-8") as f:
+        json.dump(log, f, ensure_ascii=False, indent=1)
+    print("投稿ログを記録しました。")
 
 
 def main():
@@ -211,7 +241,8 @@ def main():
         sys.exit(1)
 
     user_id = get_user_id(token)
-    post_to_threads(text, user_id, token)
+    post_id = post_to_threads(text, user_id, token)
+    append_log(post_id, race, now)
 
 
 if __name__ == "__main__":
