@@ -110,6 +110,19 @@ def get_user_id(token: str) -> str:
     return me["id"]
 
 
+def current_streak(log: list) -> int:
+    """結果確定済みレースを時系列に並べ、直近から遡った連続的中数を返す."""
+    resolved = [e for e in log if e.get("result")]
+    resolved.sort(key=lambda x: x.get("race_closed_at") or "")
+    streak = 0
+    for e in reversed(resolved):
+        if e.get("hit"):
+            streak += 1
+        else:
+            break
+    return streak
+
+
 def fetch_permalink(post_id: str, token: str):
     """投稿のURL(permalink)を取得。失敗時はNone."""
     try:
@@ -121,8 +134,11 @@ def fetch_permalink(post_id: str, token: str):
         return None
 
 
-def post_hit(entry: dict, payout, token: str, user_id: str) -> bool:
-    lines = [
+def post_hit(entry: dict, payout, token: str, user_id: str, streak: int = 1) -> bool:
+    lines = []
+    if streak >= 2:
+        lines.append(f"🔥{streak}連勝中!!")
+    lines += [
         "🎯的中!!",
         f"{entry['stadium']}{entry['race_number']}R 3連単 {entry['result']}",
     ]
@@ -252,7 +268,7 @@ def main():
                     if e["hit"] and not e.get("hit_posted"):
                         if user_id is None:
                             user_id = get_user_id(token)
-                        if post_hit(e, payout, token, user_id):
+                        if post_hit(e, payout, token, user_id, current_streak(log)):
                             e["hit_posted"] = True
 
     if changed:
