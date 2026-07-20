@@ -220,10 +220,36 @@ def append_log(post_id: str, race: dict, now):
     print("投稿ログを記録しました。")
 
 
+def recently_posted(now, minutes: int = 100) -> bool:
+    """直近に投稿済みなら True (スケジュール遅延による二重投稿を防ぐ)."""
+    if not os.path.exists("posts_log.json"):
+        return False
+    try:
+        with open("posts_log.json", encoding="utf-8") as f:
+            log = json.load(f)
+        if not log:
+            return False
+        last = datetime.fromisoformat(log[-1]["posted_at"])
+        return (now - last).total_seconds() < minutes * 60
+    except Exception:  # noqa: BLE001
+        return False
+
+
 def main():
     dry_run = os.environ.get("DRY_RUN", "0") == "1"
     now = datetime.now(JST)
     print(f"実行時刻(JST): {now:%Y-%m-%d %H:%M}")
+
+    # ガード1: 想定時間帯(11:00〜19:30 JST)以外はスキップ (クーロン遅延対策)
+    hm = now.strftime("%H:%M")
+    if not dry_run and not ("11:00" <= hm <= "19:30"):
+        print("想定の投稿時間帯(11:00〜19:30)外のためスキップします。")
+        return
+
+    # ガード2: 直近100分以内に投稿済みならスキップ (二重投稿防止)
+    if not dry_run and recently_posted(now):
+        print("直近に投稿済みのためスキップします。")
+        return
 
     data = http_get_json(PROGRAMS_URL)
     programs = data.get("programs") or []
