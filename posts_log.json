@@ -233,7 +233,11 @@
   },
   "views_at": {
    "1h": 1.14
-  }
+  },
+  "result": "1-4-3",
+  "payout": 900,
+  "hit": true,
+  "hit_posted": true
  },
  {
   "post_id": "18102247109230366",
@@ -256,6 +260,10 @@
   },
   "views_at": {
    "1h": 1.42
-  }
+  },
+  "result": "1-2-3",
+  "payout": 460,
+  "hit": true,
+  "hit_posted": true
  }
 ]
