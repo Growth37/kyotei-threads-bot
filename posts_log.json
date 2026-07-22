@@ -269,5 +269,23 @@
   "payout": 460,
   "hit": true,
   "hit_posted": true
+ },
+ {
+  "post_id": "18108379183822150",
+  "posted_at": "2026-07-22T11:37:10+09:00",
+  "race_date": "2026-07-22",
+  "stadium_number": 13,
+  "stadium": "尼崎",
+  "race_number": 6,
+  "race_closed_at": "2026-07-22 12:42:00",
+  "combos": [
+   "1-4-2",
+   "1-4-6",
+   "1-2-4",
+   "1-2-6",
+   "1-6-4",
+   "1-6-2"
+  ],
+  "views": {}
  }
 ]
