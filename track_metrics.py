@@ -137,17 +137,19 @@ def fetch_permalink(post_id: str, token: str):
 def post_hit(entry: dict, payout, token: str, user_id: str, streak: int = 1) -> bool:
     lines = []
     if streak >= 2:
-        lines.append(f"🔥{streak}連勝中!!")
+        lines.append(f"🔥{streak}連勝中やで!!")
     lines += [
-        "🎯的中!!",
+        "🎯的中や!!",
         f"{entry['stadium']}{entry['race_number']}R 3連単 {entry['result']}",
     ]
     if payout:
         lines.append(f"配当 {int(payout):,}円")
+    if entry.get("nerai") and entry["result"] in entry["nerai"]:
+        lines.append("狙いの中穴がズバッとハマったわ🎯")
     permalink = fetch_permalink(entry["post_id"], token)
     if permalink:
-        lines += ["", "👇予想はこちら", permalink]
-    lines += ["", "※舟券は自己責任で🙏", "#競艇 #ボートレース #競艇予想"]
+        lines += ["", "👇この予想やで", permalink]
+    lines += ["", "※舟券は自己責任でな🙏", "#競艇 #ボートレース #競艇予想"]
     text = "\n".join(lines)
     try:
         c = http_post(
