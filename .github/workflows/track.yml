@@ -3,8 +3,8 @@ name: 表示回数と的中チェック
 on:
   schedule:
     # JST 11:05〜19:35 は30分おき、20:05〜23:05 は1時間おき (月〜土)
-    - cron: '5,35 2-10 * * 1-6'
-    - cron: '5 11-14 * * 1-6'
+    - cron: '5,35 2-10 * * *'
+    - cron: '5 11-14 * * *'
   workflow_dispatch:
 
 permissions:
