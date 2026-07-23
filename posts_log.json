@@ -385,5 +385,23 @@
   "payout": 270,
   "hit": true,
   "hit_posted": true
+ },
+ {
+  "post_id": "17873230746624877",
+  "posted_at": "2026-07-23T11:37:11+09:00",
+  "race_date": "2026-07-23",
+  "stadium_number": 22,
+  "stadium": "福岡",
+  "race_number": 3,
+  "race_closed_at": "2026-07-23 13:15:00",
+  "combos": [
+   "1-4-2",
+   "1-4-6",
+   "1-2-4",
+   "1-2-6",
+   "1-6-4",
+   "1-6-2"
+  ],
+  "views": {}
  }
 ]
