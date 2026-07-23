@@ -127,7 +127,7 @@ def build_nerai(h: int, t: int, s: int, f4: int) -> list:
 
 
 def build_comment(race: dict, ranked: list) -> str:
-    """レースの実データから関西弁の実況風コメントをつくる (話し言葉風)."""
+    """レースの実データから関西弁の実況風コメントをつくる (毎回ちがう褒め方)."""
     import random
     seed = int(race["race_stadium_number"]) * 1000 + int(race["race_number"]) * 7 \
         + sum(int(b["racer_boat_number"]) * int(float(b.get("racer_average_start_timing") or 0.2) * 100) for b in race["boats"])
@@ -140,40 +140,93 @@ def build_comment(race: dict, ranked: list) -> str:
         return int(b["racer_boat_number"])
 
     top = ranked[0]
+
+    def honmei_line(b):
+        """本命艇の一番ええところを、その日ごとに違う切り口で褒める."""
+        name, lane = nm(b), ln(b)
+        nat = float(b.get("racer_national_top_2_percent") or 0)
+        loc = float(b.get("racer_local_top_2_percent") or 0)
+        mot = float(b.get("racer_assigned_motor_top_2_percent") or 0)
+        st = float(b.get("racer_average_start_timing") or 0.25)
+        cls = int(b.get("racer_class_number") or 4)
+
+        cands = []
+        if nat >= 45:
+            cands.append([
+                f"{lane}号艇{name}、全国2連率{nat}%は数字が違うわ。ここは信頼していこ",
+                f"何といっても{name}の全国2連率{nat}%やろ。安定感が段違いやねん",
+                f"{name}は全国2連率{nat}%、そうそう崩れへんタイプやし本線でええ",
+            ])
+        if loc >= 40:
+            cands.append([
+                f"{name}はこの水面が得意で当地2連率{loc}%、庭みたいなもんやろ",
+                f"当地{loc}%の{name}、ここ走り慣れてるのはデカいで",
+                f"{lane}号艇{name}、当地2連率{loc}%でコース知り尽くしとる強みがある",
+            ])
+        if 0 < st <= 0.14:
+            cands.append([
+                f"{name}はST{st}と踏み込み鋭いし、まず好スタート決めてくるやろ",
+                f"{lane}号艇{name}のスタート勘がええ(ST{st})、先手取れば展開作れるで",
+                f"何より{name}のST{st}、この一歩目の速さは武器やねん",
+            ])
+        if mot >= 40:
+            cands.append([
+                f"{name}はモーター2連率{mot}%と気配上々、足が来てるのはホンマ強い",
+                f"{lane}号艇{name}、モーター{mot}%でよう回っとるし伸びも押さえも効くやろ",
+                f"{name}の機力({mot}%)がええから、多少展開ずれても粘れるタイプや",
+            ])
+        if cls == 1:
+            cands.append([
+                f"{lane}号艇{name}はA1の格上、勝負どころの一手が違うし信頼度高いわ",
+                f"{name}はA1やし地力が一枚上、ここは落ち着いて中心でええやろ",
+                f"格でいえば{name}(A1)が抜けてる、本線でどっしり獲りにいくで",
+            ])
+        if lane == 1:
+            cands.append([
+                f"1コースに{name}が入ったし、イン信頼で組み立てるのがセオリーやろ",
+                f"{name}が1号艇なら、まずインの逃げ本線から入るのが素直やねん",
+                f"1コース{name}、枠なりならこのイン先マイが一番堅いと見てるで",
+            ])
+        if not cands:
+            cands.append([
+                f"{lane}号艇{name}を中心に、ここは本線でいこか",
+                f"総合力で{name}が抜けてるし、素直に中心視でええやろ",
+            ])
+        return rng.choice(rng.choice(cands))
+
+    # 2文目: 本命以外の「注意艇/展開」ネタから1つ
+    outer = [b for b in race["boats"] if ln(b) >= 3 and ln(b) != ln(top)]
+    others = [b for b in race["boats"] if ln(b) != ln(top)]
     lane1 = next((b for b in race["boats"] if ln(b) == 1), None)
-    outer = [b for b in race["boats"] if ln(b) >= 3]
-    best_st = min(race["boats"], key=lambda b: float(b.get("racer_average_start_timing") or 0.25))
     best_st_out = min(outer, key=lambda b: float(b.get("racer_average_start_timing") or 0.25)) if outer else None
-    best_motor = max(race["boats"], key=lambda b: float(b.get("racer_assigned_motor_top_2_percent") or 0))
+    best_st_oth = min(others, key=lambda b: float(b.get("racer_average_start_timing") or 0.25)) if others else None
+    best_mot_oth = max(others, key=lambda b: float(b.get("racer_assigned_motor_top_2_percent") or 0)) if others else None
 
-    parts = []
-    if ln(top) == 1 and int(top.get("racer_class_number") or 4) == 1:
-        parts.append(rng.choice([
-            f"1号艇の{nm(top)}はA1やしここは素直にイン逃げ本線でええやろ",
-            f"{nm(top)}のインは正直鉄板ちゃうかと思てるんよな",
-            f"1コース{nm(top)}がA1で堅そうやけど油断でけへんのが競艇や",
+    seconds = []
+    if lane1 is not None and ln(top) == 1 and float(lane1.get("racer_average_start_timing") or 0.2) >= 0.17 and best_st_out is not None:
+        seconds.append(rng.choice([
+            f"ただ1のSTがちょい遅めやから、スタート決まれば{ln(best_st_out)}の{nm(best_st_out)}が直まくりで一発あるかも",
+            f"1のスタート甘なったら{ln(best_st_out)}の{nm(best_st_out)}がカドからズドンいくで、そこは警戒やな",
         ]))
-    if lane1 is not None and float(lane1.get("racer_average_start_timing") or 0.2) >= 0.17 and best_st_out is not None:
-        parts.append(rng.choice([
-            f"ただ1のSTちょい遅めやから、スタート遅れたら{ln(best_st_out)}の{nm(best_st_out)}が直まくりいくんちゃう？",
-            f"1のスタート甘なったら{ln(best_st_out)}の{nm(best_st_out)}がカドからズドン一発あるで",
+    if best_st_oth is not None and float(best_st_oth.get("racer_average_start_timing") or 0.25) <= 0.14:
+        seconds.append(rng.choice([
+            f"相手は{ln(best_st_oth)}号艇{nm(best_st_oth)}、ST{best_st_oth.get('racer_average_start_timing')}の踏み込みが速いから展開ついたら怖い",
+            f"{ln(best_st_oth)}の{nm(best_st_oth)}はスタート速いし、握って回られたら一気やで",
         ]))
-    st_val = float(best_st.get("racer_average_start_timing") or 0.25)
-    if ln(best_st) != 1 and st_val <= 0.15:
-        parts.append(rng.choice([
-            f"{ln(best_st)}号艇{nm(best_st)}のST{best_st.get('racer_average_start_timing')}はホンマ早いし展開ついたら一撃あるやつや",
-            f"{ln(best_st)}の{nm(best_st)}はスリット速攻タイプやから握って回られたら怖いでこれ",
+    if best_mot_oth is not None and float(best_mot_oth.get("racer_assigned_motor_top_2_percent") or 0) >= 42:
+        seconds.append(rng.choice([
+            f"{ln(best_mot_oth)}号艇はモーター{best_mot_oth.get('racer_assigned_motor_top_2_percent')}%とよう伸びるし、相手筆頭はここやと見てる",
+            f"足でいうと{ln(best_mot_oth)}の{nm(best_mot_oth)}が一番エエの積んどる、ヒモには絶対入れときたい",
         ]))
-    motor_val = float(best_motor.get("racer_assigned_motor_top_2_percent") or 0)
-    if motor_val >= 40:
-        parts.append(rng.choice([
-            f"あと{ln(best_motor)}号艇のモーター{best_motor.get('racer_assigned_motor_top_2_percent')}%はえらい仕上がっとるから伸び足だけ注意やな",
-            f"モーターは{ln(best_motor)}号艇が一番エエの積んどるし足勝負なったら面白いで",
-        ]))
-    if len(parts) < 2:
-        parts.append(f"枠なり進入なら{ln(ranked[0])}の先マイ本線で2着は{ln(ranked[1])}あたりとちゃうか")
+    # 汎用の締め
+    seconds.append(rng.choice([
+        f"あとは相手を{ln(ranked[1])}・{ln(ranked[2])}あたりでどう抑えるか、そこの勝負やな",
+        f"2着争いは{ln(ranked[1])}と{ln(ranked[2])}のガチンコになると見てるで",
+        f"ヒモは{ln(ranked[1])}・{ln(ranked[2])}を軸に手広く、荒れ気配あれば{ln(ranked[3])}まで",
+    ]))
 
-    a, b = parts[0], parts[1]
+    a = honmei_line(top)
+    b = rng.choice(seconds[:-1]) if len(seconds) > 1 and rng.random() < 0.75 else seconds[-1]
 
     def finish(p):
         return p if p.endswith(("？", "！")) else p + "！"
