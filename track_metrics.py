@@ -134,6 +134,38 @@ def fetch_permalink(post_id: str, token: str):
         return None
 
 
+def hit_comment(entry: dict, payout, streak: int) -> str:
+    """的中の内容に合わせた関西弁の一言をつくる."""
+    import random
+    rng = random.Random(str(entry.get("post_id")))
+    result = entry.get("result") or ""
+    head = result.split("-")[0] if result else ""
+    is_nerai = bool(entry.get("nerai")) and result in entry["nerai"]
+
+    if is_nerai:
+        base = rng.choice([
+            f"{head}頭は狙い通りや！本命party には獲れへんやつやで",
+            f"{head}のまくり、読み通りズバリでニヤけたわ",
+            "中穴ゾーンどんぴしゃ！こういうのが獲れたら競艇は楽しいんよ",
+        ])
+        base = base.replace("party ", "党")
+    else:
+        base = rng.choice([
+            "イン逃げ本線どおり、堅く獲ったで",
+            "読み通りの決着や。素直が一番やね",
+            "本線ドンピシャ！この積み重ねが大事なんよ",
+        ])
+    if payout:
+        p = int(payout)
+        if p >= 5000:
+            base += rng.choice([f" しかも{p:,}円は美味すぎるやろ", " このオッズでこれは笑いが止まらんて"])
+        elif p < 1000:
+            base += rng.choice([" 配当は渋いけど当たりは正義や", " 安くても獲るもんは獲る、それが勝ちパターンや"])
+    if streak >= 3:
+        base += f" これで{streak}連勝、ゾーン入っとるかもしれん"
+    return base
+
+
 def post_hit(entry: dict, payout, token: str, user_id: str, streak: int = 1) -> bool:
     lines = []
     if streak >= 2:
@@ -144,8 +176,7 @@ def post_hit(entry: dict, payout, token: str, user_id: str, streak: int = 1) -> 
     ]
     if payout:
         lines.append(f"配当 {int(payout):,}円")
-    if entry.get("nerai") and entry["result"] in entry["nerai"]:
-        lines.append("狙いの中穴がズバッとハマったわ🎯")
+    lines += ["", hit_comment(entry, payout, streak)]
     permalink = fetch_permalink(entry["post_id"], token)
     if permalink:
         lines += ["", "👇この予想やで", permalink]
@@ -242,9 +273,9 @@ def main():
         elapsed_h = (now - posted).total_seconds() / 3600
         e.setdefault("views", {})
 
-        # 表示回数スナップショット
+        # 表示回数スナップショット (削除済み投稿はスキップ)
         for key, hours in SNAPSHOTS:
-            if key not in e["views"] and elapsed_h >= hours:
+            if key not in e["views"] and elapsed_h >= hours and not e.get("deleted"):
                 v = fetch_views(e["post_id"], token)
                 if v is not None:
                     e["views"][key] = v
