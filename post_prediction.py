@@ -174,8 +174,11 @@ def build_comment(race: dict, ranked: list) -> str:
         parts.append(f"枠なり進入なら{ln(ranked[0])}の先マイ本線で2着は{ln(ranked[1])}あたりとちゃうか")
 
     a, b = parts[0], parts[1]
-    joiner = " " if a.endswith("？") else rng.choice(["。", "！", "、"])
-    return f"{a}{joiner}{b}"
+
+    def finish(p):
+        return p if p.endswith(("？", "！")) else p + "！"
+
+    return f"{finish(a)}\n{finish(b)}"
 
 
 def build_post(race: dict) -> str:
