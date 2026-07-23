@@ -198,6 +198,8 @@ def build_post(race: dict) -> str:
     honmei_c = build_honmei(h, t, s, f4)
     nerai_c = build_nerai(h, t, s, f4)
     comment = build_comment(race, boats)
+    ab2 = "".join(str(x) for x in sorted([t, s]))
+    ab3 = "".join(str(x) for x in sorted([t, s, f4]))
 
     lines = [
         f"🚤 {stadium}{rno}R 予想いくで〜 (締切 {closed})",
@@ -209,10 +211,9 @@ def build_post(race: dict) -> str:
         f"▲ {s}号艇 {name(sanban)} ({cls(sanban)})",
         f"△ {f4}号艇 {name(yonban)} ({cls(yonban)})",
         "",
-        "【本命】硬め4点",
-        *["・" + c for c in honmei_c],
-        "【狙い】中穴4点",
-        *["・" + c for c in nerai_c],
+        "🎯買い目",
+        f"・{h}-{ab2}-{ab3}",
+        f"・{ab2}-{h}-{ab3}",
         "",
         "※舟券は自己責任でな🙏",
         "#競艇 #ボートレース #競艇予想",
