@@ -127,7 +127,7 @@ def build_nerai(h: int, t: int, s: int, f4: int) -> list:
 
 
 def build_comment(race: dict, ranked: list) -> str:
-    """レースの実データから関西弁の実況風コメントを2文つくる."""
+    """レースの実データから関西弁の実況風コメントをつくる (話し言葉風)."""
     import random
     seed = int(race["race_stadium_number"]) * 1000 + int(race["race_number"]) * 7 \
         + sum(int(b["racer_boat_number"]) * int(float(b.get("racer_average_start_timing") or 0.2) * 100) for b in race["boats"])
@@ -146,34 +146,36 @@ def build_comment(race: dict, ranked: list) -> str:
     best_st_out = min(outer, key=lambda b: float(b.get("racer_average_start_timing") or 0.25)) if outer else None
     best_motor = max(race["boats"], key=lambda b: float(b.get("racer_assigned_motor_top_2_percent") or 0))
 
-    lines = []
+    parts = []
     if ln(top) == 1 and int(top.get("racer_class_number") or 4) == 1:
-        lines.append(rng.choice([
-            f"1号艇の{nm(top)}はA1やし、ここは素直にイン逃げ本線でええと思うで。",
-            f"{nm(top)}のイン、正直鉄板ちゃうか。逃げ切り濃厚と見たわ。",
-            f"1コース{nm(top)}がA1で堅そうやけど、油断はでけへんのが競艇よな。",
+        parts.append(rng.choice([
+            f"1号艇の{nm(top)}はA1やしここは素直にイン逃げ本線でええやろ",
+            f"{nm(top)}のインは正直鉄板ちゃうかと思てるんよな",
+            f"1コース{nm(top)}がA1で堅そうやけど油断でけへんのが競艇や",
         ]))
     if lane1 is not None and float(lane1.get("racer_average_start_timing") or 0.2) >= 0.17 and best_st_out is not None:
-        lines.append(rng.choice([
-            f"ただ1号艇ST{lane1.get('racer_average_start_timing')}はちょい遅めやねん。スタート遅れたら{ln(best_st_out)}号艇{nm(best_st_out)}が直まくりいくんちゃう？",
-            f"1のスタートが甘なったら{ln(best_st_out)}の{nm(best_st_out)}がカドからズドンあるで。",
+        parts.append(rng.choice([
+            f"ただ1のSTちょい遅めやから、スタート遅れたら{ln(best_st_out)}の{nm(best_st_out)}が直まくりいくんちゃう？",
+            f"1のスタート甘なったら{ln(best_st_out)}の{nm(best_st_out)}がカドからズドン一発あるで",
         ]))
     st_val = float(best_st.get("racer_average_start_timing") or 0.25)
     if ln(best_st) != 1 and st_val <= 0.15:
-        lines.append(rng.choice([
-            f"{ln(best_st)}号艇{nm(best_st)}のST{best_st.get('racer_average_start_timing')}はホンマに早い。展開ついたら一撃あるやつや。",
-            f"{ln(best_st)}の{nm(best_st)}、スリット速攻タイプやから握って回られたら怖いでこれ。",
+        parts.append(rng.choice([
+            f"{ln(best_st)}号艇{nm(best_st)}のST{best_st.get('racer_average_start_timing')}はホンマ早いし展開ついたら一撃あるやつや",
+            f"{ln(best_st)}の{nm(best_st)}はスリット速攻タイプやから握って回られたら怖いでこれ",
         ]))
     motor_val = float(best_motor.get("racer_assigned_motor_top_2_percent") or 0)
     if motor_val >= 40:
-        lines.append(rng.choice([
-            f"{ln(best_motor)}号艇のモーター2連率{best_motor.get('racer_assigned_motor_top_2_percent')}%は仕上がっとるわ。伸び足要注意やで。",
-            f"モーターだけ見たら{ln(best_motor)}号艇が一番エエの積んどる。あとは足の使い方次第やな。",
+        parts.append(rng.choice([
+            f"あと{ln(best_motor)}号艇のモーター{best_motor.get('racer_assigned_motor_top_2_percent')}%はえらい仕上がっとるから伸び足だけ注意やな",
+            f"モーターは{ln(best_motor)}号艇が一番エエの積んどるし足勝負なったら面白いで",
         ]))
-    if len(lines) < 2:
-        h, t = ln(ranked[0]), ln(ranked[1])
-        lines.append(f"枠なり進入なら{h}の先マイ本線。2着争いは{t}あたりのガチンコになると見とるで。")
-    return " ".join(lines[:2])
+    if len(parts) < 2:
+        parts.append(f"枠なり進入なら{ln(ranked[0])}の先マイ本線で2着は{ln(ranked[1])}あたりとちゃうか")
+
+    a, b = parts[0], parts[1]
+    joiner = " " if a.endswith("？") else rng.choice(["。", "！", "、"])
+    return f"{a}{joiner}{b}"
 
 
 def build_post(race: dict) -> str:
