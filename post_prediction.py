@@ -167,8 +167,8 @@ def build_comment(race: dict, ranked: list) -> str:
     motor_val = float(best_motor.get("racer_assigned_motor_top_2_percent") or 0)
     if motor_val >= 40:
         lines.append(rng.choice([
-            f"{ln(best_motor)}号艇のモーター2連率{best_motor.get('racer_assigned_motor_top_2_percent')}%は仕上がっとるわ。伸び足要注意やで。",
-            f"モーターだけ見たら{ln(best_motor)}号艇が一番エエの稍んどる。あとは足の使い方次第やな。",
+            f"{ln(best_motor)}号艇のモーター2連率{best_motor.get('racer_assigned_motor_top_2_percent')}%は仕上がっとるわ。伸び足要注意やで。",
+            f"モーターだけ見たら{ln(best_motor)}号艇が一番エエの積んどる。あとは足の使い方次第やな。",
         ]))
     if len(lines) < 2:
         h, t = ln(ranked[0]), ln(ranked[1])
