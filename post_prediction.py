@@ -11,6 +11,7 @@
 
 import json
 import os
+import re
 import sys
 import time
 import urllib.parse
@@ -21,6 +22,12 @@ JST = timezone(timedelta(hours=9))
 
 PROGRAMS_URL = "https://boatraceopenapi.github.io/programs/v2/today.json"
 THREADS_API = "https://graph.threads.net/v1.0"
+
+# 公式サイト(boatrace.jp)— 無料APIが本日分を未反映のときのフォールバック取得先
+OFFICIAL_INDEX = "https://www.boatrace.jp/owpc/pc/race/index?hd={ymd}"
+OFFICIAL_RACEINDEX = "https://www.boatrace.jp/owpc/pc/race/raceindex?jcd={jcd:02d}&hd={ymd}"
+OFFICIAL_RACELIST = "https://www.boatrace.jp/owpc/pc/race/racelist?rno={rno}&jcd={jcd:02d}&hd={ymd}"
+_CLASS_STR = {"A1": 1, "A2": 2, "B1": 3, "B2": 4}
 
 STADIUMS = {
     1: "桐生", 2: "戸田", 3: "江戸川", 4: "平和島", 5: "多摩川", 6: "浜名湖",
@@ -46,6 +53,159 @@ def http_post(url: str, params: dict):
     req = urllib.request.Request(url, data=data, method="POST")
     with urllib.request.urlopen(req, timeout=30) as res:
         return json.loads(res.read().decode("utf-8"))
+
+
+# ===== 公式サイト(boatrace.jp)フォールバック取得 ===================
+# 無料API(boatraceopenapi)が本日分を反映していない日だけ、公式サイトの
+# 出走表HTMLから同じ形のデータを組み立てる。普段はAPIを使う二段構え。
+
+def http_get_html(url: str) -> str:
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "Mozilla/5.0 (compatible; kyotei-bot/1.0)"}
+    )
+    with urllib.request.urlopen(req, timeout=30) as res:
+        return res.read().decode("utf-8", errors="replace")
+
+
+def _num(s):
+    """'3.70'→3.7 / '-'や空→None."""
+    s = (s or "").strip()
+    if s in ("", "-"):
+        return None
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+
+def official_active_stadiums(ymd: str) -> list:
+    """本日開催している場コード(1〜24)の一覧を index ページから取得."""
+    html = http_get_html(OFFICIAL_INDEX.format(ymd=ymd))
+    found = set()
+    for x in re.findall(r"jcd=(\d{1,2})", html):
+        n = int(x)
+        if 1 <= n <= 24:
+            found.add(n)
+    return sorted(found)
+
+
+def official_closing_times(jcd: int, ymd: str) -> dict:
+    """1場の各レースの締切予定時刻 {レース番号: 'HH:MM'} を raceindex から取得."""
+    html = http_get_html(OFFICIAL_RACEINDEX.format(jcd=jcd, ymd=ymd))
+    times = {}
+    for m in re.finditer(r">(\d{1,2})R</[a-z]+>[\s\S]{0,300}?(\d{1,2}:\d{2})<", html):
+        rno = int(m.group(1))
+        if rno not in times:
+            times[rno] = m.group(2)
+    return times
+
+
+def official_parse_racelist(html: str, stadium: int, rno: int,
+                            date_str: str, closed_hm: str) -> dict:
+    """出走表HTMLを解析し、APIと同じ形のレース辞書を返す(1〜6号艇の順)."""
+    starts = [
+        m.start() for m in re.finditer(
+            r'<div class="is-fs11">\s*(\d{4})\s*/\s*<span[^>]*>\s*[AB][12]\s*</span>',
+            html,
+        )
+    ][:6]
+    boats = []
+    for i, s in enumerate(starts):
+        block = html[s: (starts[i + 1] if i + 1 < len(starts) else s + 4000)]
+        cm = re.search(r"<span[^>]*>\s*([AB][12])\s*</span>", block)
+        cls = _CLASS_STR.get(cm.group(1), 4) if cm else 4
+        nm = re.search(r'is-fs18 is-fBold"><a[^>]*>([^<]+)</a>', block)
+        name = re.sub(r"\s+", " ", nm.group(1)).strip() if nm else ""
+        fst = re.search(r"F(\d+)\s*<br[^>]*>\s*L\d+\s*<br[^>]*>\s*([\d.]+|-)", block)
+        flying = int(fst.group(1)) if fst else 0
+        st = _num(fst.group(2)) if fst else None
+        # 続く is-lineH2 セルの並び: [全国, 当地, モーター, ボート]。各セルの2番目が2連率
+        cells = re.findall(
+            r"is-lineH2[^>]*>\s*([\d.]+)\s*<br[^>]*>\s*([\d.]+)\s*<br[^>]*>\s*([\d.]+)\s*<",
+            block,
+        )
+
+        def rate2(idx):
+            return _num(cells[idx][1]) if idx < len(cells) else None
+
+        boats.append({
+            "racer_boat_number": i + 1,
+            "racer_name": name,
+            "racer_class_number": cls,
+            "racer_national_top_2_percent": rate2(0) or 0.0,
+            "racer_local_top_2_percent": rate2(1) or 0.0,
+            "racer_assigned_motor_top_2_percent": rate2(2) or 0.0,
+            "racer_assigned_boat_top_2_percent": rate2(3) or 0.0,
+            "racer_average_start_timing": st if st is not None else 0.20,
+            "racer_flying_count": flying,
+        })
+    return {
+        "race_stadium_number": stadium,
+        "race_number": rno,
+        "race_date": date_str,
+        "race_closed_at": f"{date_str} {closed_hm}:00",
+        "boats": boats,
+    }
+
+
+def load_programs_official(now: datetime, ymd: str, today: str) -> list:
+    """公式サイトから、対象時間帯(締切15〜130分後)のレースだけ出走表を集める."""
+    try:
+        stadiums = official_active_stadiums(ymd)
+    except Exception as e:  # noqa: BLE001
+        print(f"公式サイトの開催場取得に失敗: {e}")
+        return []
+    print(f"本日開催: {len(stadiums)}場 {stadiums}")
+
+    candidates = []  # (jcd, rno, 'HH:MM')
+    for jcd in stadiums:
+        try:
+            times = official_closing_times(jcd, ymd)
+        except Exception as e:  # noqa: BLE001
+            print(f"  {jcd}場のレース一覧取得に失敗: {e}")
+            continue
+        for rno, hm in times.items():
+            try:
+                t = datetime.strptime(f"{today} {hm}", "%Y-%m-%d %H:%M").replace(tzinfo=JST)
+            except ValueError:
+                continue
+            delta = (t - now).total_seconds() / 60
+            if 15 <= delta <= 130:
+                candidates.append((jcd, rno, hm))
+        time.sleep(0.2)
+    candidates.sort(key=lambda c: c[2])
+    print(f"対象時間帯の候補レース: {len(candidates)}件")
+
+    programs = []
+    for jcd, rno, hm in candidates[:40]:
+        try:
+            html = http_get_html(OFFICIAL_RACELIST.format(rno=rno, jcd=jcd, ymd=ymd))
+            race = official_parse_racelist(html, jcd, rno, today, hm)
+            if len(race["boats"]) == 6:
+                programs.append(race)
+        except Exception as e:  # noqa: BLE001
+            print(f"  {jcd}場{rno}Rの出走表取得に失敗: {e}")
+        time.sleep(0.3)
+    print(f"公式サイトから {len(programs)}レース分の出走表を取得しました。")
+    return programs
+
+
+def load_programs(now: datetime) -> list:
+    """出走表データを取得。無料APIが本日分を反映していなければ公式サイトへ切替."""
+    ymd = now.strftime("%Y%m%d")
+    today = now.strftime("%Y-%m-%d")
+    api_programs = []
+    try:
+        data = http_get_json(PROGRAMS_URL)
+        api_programs = data.get("programs") or []
+    except Exception as e:  # noqa: BLE001
+        print(f"無料API取得に失敗: {e}")
+    fresh = any((p.get("race_date") or "") >= today for p in api_programs)
+    if api_programs and fresh:
+        print(f"データ源: 無料API (本日 {len(api_programs)}レース)")
+        return api_programs
+    print("無料APIが本日分を未反映。公式サイト(boatrace.jp)から取得します。")
+    return load_programs_official(now, ymd, today)
 
 
 def score_boat(boat: dict) -> float:
@@ -370,9 +530,8 @@ def main():
         print("直近に投稿済みのためスキップします。")
         return
 
-    data = http_get_json(PROGRAMS_URL)
-    programs = data.get("programs") or []
-    print(f"本日のレース数: {len(programs)}")
+    programs = load_programs(now)
+    print(f"取得レース数: {len(programs)}")
 
     race = pick_race(programs, now)
     if race is None:
