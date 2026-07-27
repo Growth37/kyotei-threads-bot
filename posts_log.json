@@ -942,6 +942,9 @@
   },
   "views_at": {
    "1h": 1.05
-  }
+  },
+  "result": "1-3-5",
+  "payout": 2750,
+  "hit": false
  }
 ]
