@@ -272,15 +272,22 @@ def _sort_combos(combos: list) -> list:
     return sorted(combos, key=lambda c: tuple(int(x) for x in c.split("-")))
 
 
-def build_honmei(h: int, t: int, s: int, f4: int) -> list:
-    """本命4点: ◎1着固定の硬め (バックテストで最も的中率が高かった形)."""
+def build_honmei(h: int, t: int, s: int, f4: int, f5: int) -> list:
+    """本命9点: ◎1着ながし。2着=○▲△、3着=○▲△⑤。
+
+    66日分のバックテストで、狙い(4点)と同じ回収率(約78%)を保ったまま
+    的中率が約38%→約59%に上がった形。◎が1着に来たときの2〜3着の
+    取りこぼしを拾えるのが効いている。
+    """
+    seconds = [t, s, f4]
+    thirds = [t, s, f4, f5]
     return _sort_combos([
-        f"{h}-{t}-{s}", f"{h}-{t}-{f4}", f"{h}-{s}-{t}", f"{h}-{s}-{f4}",
+        f"{h}-{b}-{c}" for b in seconds for c in thirds if c != b
     ])
 
 
 def build_nerai(h: int, t: int, s: int, f4: int) -> list:
-    """狙い4点: ○▲を頭に◎を2着に置く中穴ゾーン."""
+    """狙い4点: ○▲を頭に◎を2着に置く中穴ゾーン (据え置き)."""
     return _sort_combos([
         f"{t}-{h}-{s}", f"{t}-{h}-{f4}", f"{s}-{h}-{t}", f"{s}-{h}-{f4}",
     ])
@@ -400,7 +407,7 @@ def build_post(race: dict) -> str:
     closed = race["race_closed_at"][11:16]  # HH:MM
 
     boats = sorted(race["boats"], key=score_boat, reverse=True)
-    honmei, taikou, sanban, yonban = boats[0], boats[1], boats[2], boats[3]
+    honmei, taikou, sanban, yonban, goban = boats[0], boats[1], boats[2], boats[3], boats[4]
 
     def lane(b):
         return int(b["racer_boat_number"])
@@ -412,12 +419,15 @@ def build_post(race: dict) -> str:
         return CLASSES.get(int(b.get("racer_class_number") or 4), "?")
 
     h, t, s = lane(honmei), lane(taikou), lane(sanban)
-    f4 = lane(yonban)
-    honmei_c = build_honmei(h, t, s, f4)
+    f4, f5 = lane(yonban), lane(goban)
+    honmei_c = build_honmei(h, t, s, f4, f5)
     nerai_c = build_nerai(h, t, s, f4)
     comment = build_comment(race, boats)
-    ab2 = "".join(str(x) for x in sorted([t, s]))
-    ab3 = "".join(str(x) for x in sorted([t, s, f4]))
+    # 本命: ◎ - {○▲△} - {○▲△⑤}  /  狙い: {○▲} - ◎ - {○▲△}
+    hon2 = "".join(str(x) for x in sorted([t, s, f4]))
+    hon3 = "".join(str(x) for x in sorted([t, s, f4, f5]))
+    ner1 = "".join(str(x) for x in sorted([t, s]))
+    ner3 = "".join(str(x) for x in sorted([t, s, f4]))
 
     lines = [
         f"🚤 {stadium}{rno}R 予想いくで〜 (締切 {closed})",
@@ -430,8 +440,8 @@ def build_post(race: dict) -> str:
         f"△ {f4}号艇 {name(yonban)} ({cls(yonban)})",
         "",
         "🎯買い目",
-        f"【本命】{h}-{ab2}-{ab3}",
-        f"【狙い】{ab2}-{h}-{ab3}",
+        f"【本命】{h}-{hon2}-{hon3}",
+        f"【狙い】{ner1}-{h}-{ner3}",
         "",
         "※舟券は自己責任でな🙏",
         "#競艇 #ボートレース #競艇予想",
@@ -478,9 +488,9 @@ def append_log(post_id: str, race: dict, now):
         with open(log_file, encoding="utf-8") as f:
             log = json.load(f)
     boats = sorted(race["boats"], key=score_boat, reverse=True)
-    lanes = [int(b["racer_boat_number"]) for b in boats[:4]]
-    honmei_c = build_honmei(*lanes)
-    nerai_c = build_nerai(*lanes)
+    lanes = [int(b["racer_boat_number"]) for b in boats[:5]]
+    honmei_c = build_honmei(*lanes[:5])
+    nerai_c = build_nerai(*lanes[:4])
     log.append({
         "post_id": post_id,
         "posted_at": now.isoformat(timespec="seconds"),
