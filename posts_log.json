@@ -1537,6 +1537,10 @@
   },
   "views_at": {
    "1h": 1.05
-  }
+  },
+  "result": "1-4-2",
+  "payout": 1120,
+  "hit": true,
+  "hit_posted": true
  }
 ]
