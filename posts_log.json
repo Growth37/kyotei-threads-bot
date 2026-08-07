@@ -2689,7 +2689,11 @@
   "views_at": {
    "1h": 1.05,
    "5h": 5.05
-  }
+  },
+  "result": "1-2-3",
+  "payout": 1080,
+  "hit": true,
+  "hit_posted": true
  },
  {
   "post_id": "18121267747887117",
@@ -2736,6 +2740,10 @@
   },
   "views_at": {
    "1h": 1.04
-  }
+  },
+  "result": "6-1-5",
+  "payout": 7980,
+  "hit": true,
+  "hit_posted": true
  }
 ]
