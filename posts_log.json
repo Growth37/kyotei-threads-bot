@@ -4767,7 +4767,11 @@
   "views_at": {
    "1h": 1.05,
    "5h": 5.05
-  }
+  },
+  "result": "1-3-2",
+  "payout": 760,
+  "hit": true,
+  "hit_posted": true
  },
  {
   "post_id": "18096142205056528",
@@ -4814,7 +4818,10 @@
   },
   "views_at": {
    "1h": 1.04
-  }
+  },
+  "result": "1-3-6",
+  "payout": 2600,
+  "hit": false
  },
  {
   "post_id": "18431429752177870",
@@ -4861,6 +4868,10 @@
   },
   "views_at": {
    "1h": 1.08
-  }
+  },
+  "result": "1-2-4",
+  "payout": 480,
+  "hit": true,
+  "hit_posted": true
  }
 ]
