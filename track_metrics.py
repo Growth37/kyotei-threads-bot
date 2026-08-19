@@ -283,12 +283,12 @@ def main():
                     print(f"{e['stadium']}{e['race_number']}R: {key} views = {v}")
                     changed = True
 
-        # 的中チェック (締切40分後以降)
+        # 的中チェック (締切25分後以降)
         if not e.get("result"):
             closed = datetime.strptime(
                 e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
             ).replace(tzinfo=JST)
-            if now >= closed + timedelta(minutes=40):
+            if now >= closed + timedelta(minutes=25):
                 res = find_race_result(e)
                 if res:
                     combo, payout = res
