@@ -13,6 +13,7 @@
 
 import csv
 import json
+import re
 import os
 import sys
 import time
@@ -79,7 +80,50 @@ def fetch_results(race_date: str):
     return _results_cache[race_date]
 
 
+OFFICIAL_RESULT = "https://www.boatrace.jp/owpc/pc/race/raceresult?rno={rno}&jcd={jcd:02d}&hd={ymd}"
+
+
+def http_get_html(url: str) -> str:
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; kyotei-bot/1.0)"})
+    with urllib.request.urlopen(req, timeout=30) as res:
+        return res.read().decode("utf-8", errors="replace")
+
+
+def _result_from_official(entry: dict):
+    """無料APIに結果がまだ無い時、公式サイト(boatrace.jp)から3連単の結果を取る."""
+    ymd = (entry.get("race_date") or "").replace("-", "")
+    jcd = int(entry.get("stadium_number") or 0)
+    rno = int(entry.get("race_number") or 0)
+    if not (ymd and jcd and rno):
+        return None
+    try:
+        html = http_get_html(OFFICIAL_RESULT.format(rno=rno, jcd=jcd, ymd=ymd))
+    except Exception as e:  # noqa: BLE001
+        print(f"  公式結果の取得失敗 ({jcd}-{rno}): {e}")
+        return None
+    i = html.find("3連単")
+    if i < 0:
+        return None
+    seg = html[i:i + 1200]
+    digits = re.findall(r"numberSet1_number[^>]*>\s*(\d)\s*<", seg)
+    if len(digits) < 3:
+        return None
+    combo = f"{digits[0]}-{digits[1]}-{digits[2]}"
+    pm = re.search(r'is-payout1"[^>]*>[^\d]*?([\d,]+)', seg)
+    payout = int(pm.group(1).replace(",", "")) if pm else None
+    print(f"  公式サイトから結果取得: {jcd}-{rno} {combo} ({payout}円)")
+    return combo, payout
+
+
 def find_race_result(entry: dict):
+    """無料API→無ければ公式サイト の順で結果を取得する."""
+    res = _result_from_api(entry)
+    if res:
+        return res
+    return _result_from_official(entry)
+
+
+def _result_from_api(entry: dict):
     """該当レースの結果から (3連単の組番, 配当) を返す。未確定ならNone."""
     for race in fetch_results(entry["race_date"]):
         if int(race.get("race_stadium_number") or 0) != int(entry["stadium_number"]):
