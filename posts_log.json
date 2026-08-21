@@ -5523,6 +5523,10 @@
   },
   "views_at": {
    "1h": 1.09
-  }
+  },
+  "result": "1-2-4",
+  "payout": 1100,
+  "hit": true,
+  "hit_posted": true
  }
 ]
