@@ -6074,6 +6074,10 @@
   },
   "views_at": {
    "1h": 1.05
-  }
+  },
+  "result": "1-3-5",
+  "payout": 1180,
+  "hit": true,
+  "hit_posted": true
  }
 ]
