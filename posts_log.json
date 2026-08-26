@@ -6284,10 +6284,15 @@
    "3-1-2",
    "3-1-4"
   ],
-  "views": {},
+  "views": {
+   "1h": 356
+  },
   "result": "1-2-6",
   "payout": 2370,
   "hit": true,
-  "hit_posted": true
+  "hit_posted": true,
+  "views_at": {
+   "1h": 1.04
+  }
  }
 ]
