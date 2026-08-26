@@ -6284,6 +6284,10 @@
    "3-1-2",
    "3-1-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-2-6",
+  "payout": 2370,
+  "hit": true,
+  "hit_posted": true
  }
 ]
