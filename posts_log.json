@@ -6612,6 +6612,15 @@
    "6-1-3",
    "6-1-4"
   ],
-  "views": {}
+  "views": {
+   "1h": 465
+  },
+  "views_at": {
+   "1h": 1.03
+  },
+  "result": "6-1-3",
+  "payout": 20530,
+  "hit": true,
+  "hit_posted": true
  }
 ]
