@@ -293,6 +293,13 @@ def build_nerai(h: int, t: int, s: int, f4: int) -> list:
     ])
 
 
+def build_shibori(h: int, t: int, s: int, f4: int) -> list:
+    """絞り4点: ◎1着固定・2着=○▲・3着=○▲△。本命9点の中で一番硬い核."""
+    return _sort_combos([
+        f"{h}-{t}-{s}", f"{h}-{t}-{f4}", f"{h}-{s}-{t}", f"{h}-{s}-{f4}",
+    ])
+
+
 def build_comment(race: dict, ranked: list) -> str:
     """レースの実データから関西弁の実況風コメントをつくる (毎回ちがう褒め方)."""
     import random
@@ -440,6 +447,7 @@ def build_post(race: dict) -> str:
         f"△ {f4}号艇 {name(yonban)} ({cls(yonban)})",
         "",
         "🎯買い目",
+        f"【絞り】{h}-{ner1}-{ner3}",
         f"【本命】{h}-{hon2}-{hon3}",
         f"【狙い】{ner1}-{h}-{ner3}",
         "",
@@ -491,6 +499,7 @@ def append_log(post_id: str, race: dict, now):
     lanes = [int(b["racer_boat_number"]) for b in boats[:5]]
     honmei_c = build_honmei(*lanes[:5])
     nerai_c = build_nerai(*lanes[:4])
+    shibori_c = build_shibori(*lanes[:4])
     log.append({
         "post_id": post_id,
         "posted_at": now.isoformat(timespec="seconds"),
@@ -502,6 +511,7 @@ def append_log(post_id: str, race: dict, now):
         "combos": honmei_c + nerai_c,
         "honmei": honmei_c,
         "nerai": nerai_c,
+        "shibori": shibori_c,
         "views": {},
     })
     with open(log_file, "w", encoding="utf-8") as f:
