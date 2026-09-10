@@ -8768,6 +8768,15 @@
    "1-4-2",
    "1-4-5"
   ],
-  "views": {}
+  "views": {
+   "1h": 357
+  },
+  "views_at": {
+   "1h": 1.11
+  },
+  "result": "1-2-4",
+  "payout": 1180,
+  "hit": true,
+  "hit_posted": true
  }
 ]
