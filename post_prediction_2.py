@@ -27,8 +27,11 @@ score_boat = eng.score_boat
 LOG_FILE = "posts_log_2.json"
 OTHER_LOG = "posts_log.json"  # @r_no_yosou 側(重複回避用)
 
-# 4投稿の予定時刻(JST)。中穴狙いの自動割当に使う。
-SCHEDULE = ["10:14", "12:53", "16:29", "18:47"]
+# 6投稿の予定時刻(JST)。中穴狙いの自動割当に使う。
+SCHEDULE = ["10:14", "11:36", "12:53", "15:05", "16:29", "18:47"]
+
+# この時間帯は必ず「堅いレース」にする(中穴を割り当てない)
+FORCE_SOLID = {"11:36", "15:05"}
 
 # 投稿の時間帯ガード(クーロン遅延対策)
 WINDOW_START = "10:00"
@@ -185,8 +188,23 @@ def _medium_posted_today(now) -> bool:
 
 
 def _remaining_slots(now) -> int:
+    """今以降の『中穴を出せる』スロット数(堅い固定スロットは除く)."""
     hm = now.strftime("%H:%M")
-    return sum(1 for s in SCHEDULE if s >= hm)
+    return sum(1 for s in SCHEDULE if s >= hm and s not in FORCE_SOLID)
+
+
+def _current_slot(now):
+    """今の実行がどのスロットか(直近45分以内に過ぎた予定時刻)を返す."""
+    hm = now.strftime("%H:%M")
+    past = [s for s in SCHEDULE if s <= hm]
+    if not past:
+        return None
+    slot = past[-1]
+    st = datetime.strptime(slot, "%H:%M").time()
+    slot_dt = now.replace(hour=st.hour, minute=st.minute, second=0, microsecond=0)
+    if 0 <= (now - slot_dt).total_seconds() <= 45 * 60:
+        return slot
+    return None
 
 
 def candidate_races(programs, now):
@@ -215,6 +233,10 @@ def select(programs, now):
     cands = candidate_races(programs, now)
     if not cands:
         return None, None
+
+    # 11:36 / 15:05 の枠は必ず堅いレース(中穴を割り当てない)
+    if _current_slot(now) in FORCE_SOLID:
+        return max(cands, key=solidity), "堅い"
 
     medium_done = _medium_posted_today(now)
     remaining = _remaining_slots(now)
@@ -288,7 +310,7 @@ def append_log(post_id, race, now, blocks, mode):
     print("投稿ログ(posts_log_2.json)を記録しました。")
 
 
-def recently_posted(now, minutes: int = 100) -> bool:
+def recently_posted(now, minutes: int = 45) -> bool:
     if not os.path.exists(LOG_FILE):
         return False
     try:
