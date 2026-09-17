@@ -64,7 +64,7 @@ def build_solid(h, t, s, f4, f5, tight: bool):
     本線 : ◎-{○▲}-{○▲△}
     絞り : ◎-{○▲}-{○▲}    (本線の中で一番硬い核)
     抑え : ○頭・▲頭に◎を2着で置く保険 (tightなら本数を絞る)
-    合計10点以内。tight(超明確)なら約6点、通常は約9点。
+    合計10点以内・最低8点。tight(超明確)なら8点、通常は9点。
     """
     honsen_disp = f"{h}-{mm(t, s)}-{mm(t, s, f4)}"
     honsen = _expand(h, [t, s], [t, s, f4])
@@ -74,9 +74,11 @@ def build_solid(h, t, s, f4, f5, tight: bool):
     osae_lines = []
     osae = []
     if tight:
-        # 超本命レース: 抑えは○頭の2点だけ (合計 4+2=6点)
+        # 超本命レース: ○頭2点 + ▲頭2点 (合計 4+4=8点。最低8点を保証)
         osae_lines.append(f"{t}-{h}-{mm(s, f4)}")
         osae += _expand2(t, h, [s, f4])
+        osae_lines.append(f"{s}-{h}-{mm(t, f4)}")
+        osae += _expand2(s, h, [t, f4])
     else:
         # 通常: ○頭3点 + ▲頭2点 (合計 4+5=9点)
         osae_lines.append(f"{t}-{h}-{mm(s, f4, f5)}")
