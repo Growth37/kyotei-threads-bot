@@ -266,14 +266,16 @@ def pick_race(programs: list, now: datetime):
         # 20分後〜120分後に締め切られるレースを対象にする
         if 20 <= delta <= 120 and len(race.get("boats") or []) == 6:
             candidates.append((t, race))
-    # 本日すでにどちらかのbotが投稿したレースは除外(重複回避)
+    if not candidates:
+        return None
+    # 本日すでにどちらかのbotが投稿したレースは避ける(重複回避)。
+    # ただし、それで候補が全滅する時間帯は臨機応変に重複を許容して投稿する。
     posted = _posted_keys_today(now)
-    candidates = [
+    deduped = [
         c for c in candidates
         if (int(c[1]["race_stadium_number"]), int(c[1]["race_number"])) not in posted
     ]
-    if not candidates:
-        return None
+    candidates = deduped if deduped else candidates
 
     # スコア1位と2位の差が大きい=「本命がはっきりしている」レースを優先
     def clarity(race):
