@@ -208,9 +208,13 @@ def _current_slot(now):
 
 
 def candidate_races(programs, now):
-    """締切20〜120分後・6艇・未投稿のレースを候補に返す."""
+    """締切20〜120分後・6艇のレースを候補に返す.
+
+    本日すでに投稿済みのレースは避けるが、それで候補が全滅する時間帯は
+    臨機応変に重複を許容して投稿する(投稿ゼロを避ける)。
+    """
     posted = _posted_keys(now)
-    out = []
+    window = []
     for race in programs:
         closed_at = race.get("race_closed_at")
         if not closed_at or len(race.get("boats") or []) != 6:
@@ -222,10 +226,9 @@ def candidate_races(programs, now):
         delta = (t - now).total_seconds() / 60
         if not (20 <= delta <= 120):
             continue
-        if _race_key(race) in posted:
-            continue
-        out.append(race)
-    return out
+        window.append(race)
+    deduped = [r for r in window if _race_key(r) not in posted]
+    return deduped if deduped else window
 
 
 def select(programs, now):
