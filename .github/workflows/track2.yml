@@ -1,0 +1,39 @@
+name: 的中チェック(2号 @shantianzhi37)
+
+on:
+  schedule:
+    # JST 11:08〜22:48 を20分おき(毎日)。締切+25分以降にレース結果を照合し、
+    # 的中していれば的中投稿を出す。
+    - cron: '8,28,48 2-13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 的中チェックと的中投稿
+        env:
+          THREADS_ACCESS_TOKEN_2: ${{ secrets.THREADS_ACCESS_TOKEN_2 }}
+        run: python track_metrics_2.py
+      - name: 結果をコミット
+        run: |
+          git config user.name "kyotei-bot"
+          git config user.email "kyotei-bot@users.noreply.github.com"
+          for f in posts_log_2.json metrics_2.csv; do
+            [ -f "$f" ] && git add "$f"
+          done; true
+          if git diff --cached --quiet; then
+            echo "変更なし"
+            exit 0
+          fi
+          git commit -m "metrics: 2号の的中結果を更新"
+          git pull --rebase origin main
+          git push
