@@ -1,0 +1,51 @@
+name: 競艇予想をThreadsに投稿(2号 @shantianzhi37)
+
+on:
+  schedule:
+    # UTC表記 (JST-9時間)。毎日 10:14 / 12:53 / 16:29 / 18:47 JST。
+    # 各回に+25分のバックアップ実行あり(取りこぼし対策。本体が実行済みなら
+    # スクリプト側の二重投稿ガードでスキップされる)。
+    - cron: '14 1 * * *'    # 10:14 JST
+    - cron: '39 1 * * *'    # 10:39 JST (backup)
+    - cron: '53 3 * * *'    # 12:53 JST
+    - cron: '18 4 * * *'    # 13:18 JST (backup)
+    - cron: '29 7 * * *'    # 16:29 JST
+    - cron: '54 7 * * *'    # 16:54 JST (backup)
+    - cron: '47 9 * * *'    # 18:47 JST
+    - cron: '12 10 * * *'   # 19:12 JST (backup)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'お試し実行 (1=投稿せず内容表示のみ)'
+        required: false
+        default: '0'
+
+permissions:
+  contents: write
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 予想を生成してThreadsに投稿
+        env:
+          THREADS_ACCESS_TOKEN_2: ${{ secrets.THREADS_ACCESS_TOKEN_2 }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
+        run: python post_prediction_2.py
+      - name: 投稿ログをコミット
+        run: |
+          git config user.name "kyotei-bot"
+          git config user.email "kyotei-bot@users.noreply.github.com"
+          [ -f posts_log_2.json ] && git add posts_log_2.json; true
+          if git diff --cached --quiet; then
+            echo "ログ変更なし"
+            exit 0
+          fi
+          git commit -m "log: 2号の投稿記録を更新"
+          git pull --rebase origin main
+          git push
