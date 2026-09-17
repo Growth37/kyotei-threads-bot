@@ -34,6 +34,9 @@
    "2-3-1",
    "2-3-5"
   ],
-  "announced": false
+  "announced": false,
+  "result": "4-6-1",
+  "payout": 6610,
+  "hit": false
  }
 ]
