@@ -7,8 +7,12 @@ on:
     # スクリプト側の二重投稿ガードでスキップされる)。
     - cron: '14 1 * * *'    # 10:14 JST
     - cron: '39 1 * * *'    # 10:39 JST (backup)
+    - cron: '36 2 * * *'    # 11:36 JST (堅い固定)
+    - cron: '1 3 * * *'     # 12:01 JST (backup)
     - cron: '53 3 * * *'    # 12:53 JST
     - cron: '18 4 * * *'    # 13:18 JST (backup)
+    - cron: '5 6 * * *'     # 15:05 JST (堅い固定)
+    - cron: '30 6 * * *'    # 15:30 JST (backup)
     - cron: '29 7 * * *'    # 16:29 JST
     - cron: '54 7 * * *'    # 16:54 JST (backup)
     - cron: '47 9 * * *'    # 18:47 JST
