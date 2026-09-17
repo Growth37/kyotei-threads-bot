@@ -234,6 +234,23 @@ def score_boat(boat: dict) -> float:
     return score
 
 
+def _posted_keys_today(now) -> set:
+    """本日すでに投稿済みのレース(場番号, R)集合。1号/2号の両ログを見る."""
+    today = now.strftime("%Y-%m-%d")
+    keys = set()
+    for path in ("posts_log.json", "posts_log_2.json"):
+        if not os.path.exists(path):
+            continue
+        try:
+            with open(path, encoding="utf-8") as f:
+                for e in json.load(f):
+                    if (e.get("race_date") or "")[:10] == today:
+                        keys.add((int(e["stadium_number"]), int(e["race_number"])))
+        except Exception:  # noqa: BLE001
+            continue
+    return keys
+
+
 def pick_race(programs: list, now: datetime):
     """締切がこれから来るレースのうち、直近1〜2時間のものを選ぶ."""
     candidates = []
@@ -249,6 +266,12 @@ def pick_race(programs: list, now: datetime):
         # 20分後〜120分後に締め切られるレースを対象にする
         if 20 <= delta <= 120 and len(race.get("boats") or []) == 6:
             candidates.append((t, race))
+    # 本日すでにどちらかのbotが投稿したレースは除外(重複回避)
+    posted = _posted_keys_today(now)
+    candidates = [
+        c for c in candidates
+        if (int(c[1]["race_stadium_number"]), int(c[1]["race_number"])) not in posted
+    ]
     if not candidates:
         return None
 
@@ -519,7 +542,7 @@ def append_log(post_id: str, race: dict, now):
     print("投稿ログを記録しました。")
 
 
-def recently_posted(now, minutes: int = 100) -> bool:
+def recently_posted(now, minutes: int = 45) -> bool:
     """直近に投稿済みなら True (スケジュール遅延による二重投稿を防ぐ)."""
     if not os.path.exists("posts_log.json"):
         return False
