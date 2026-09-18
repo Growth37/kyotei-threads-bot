@@ -2,13 +2,17 @@
 """@shantianzhi37 (2号) の的中チェック＆的中投稿.
 
 posts_log_2.json の各投稿について、締切25分後以降にレース結果を照合し、
-買い目(本線∪抑え)の中に3連単の決着があれば「的中投稿」を元予想への
-リプライで自動投稿する。
+買い目(本線∪抑え)の中に3連単の決着があれば「的中報告」を出す。
+的中報告はリプライにしない。まず元の予想をコピーした新規投稿を出し、
+その投稿のURLを「この予想⬇️」と一緒に貼った的中報告を新規投稿する。
 
-的中投稿フォーマット(人間味なし):
+的中報告フォーマット(人間味なし):
     ⚪-⚪-⚪　⚪⚪倍🎯
 
     {回収・的中ペース系の一言}
+
+    この予想⬇️
+    {コピーした予想投稿のURL}
 
 環境変数:
   THREADS_ACCESS_TOKEN_2  @shantianzhi37 の長期アクセストークン
@@ -88,32 +92,92 @@ def build_hit_text(entry, payout, log) -> str:
     return f"{head}\n\n{pace_line(log, entry)}"
 
 
-def post_hit_reply(entry, payout, token, user_id, log) -> bool:
-    """的中投稿を元予想へのリプライで出す(失敗時は通常投稿にフォールバック)."""
-    text = build_hit_text(entry, payout, log)
-    reply_to = entry.get("post_id")
-    for params in (
-        {"media_type": "TEXT", "text": text, "reply_to_id": reply_to,
-         "access_token": token},
-        {"media_type": "TEXT", "text": text, "access_token": token},
-    ):
+def fetch_post_text(post_id, token):
+    """元の予想投稿の本文をThreads APIから取得。失敗時はNone."""
+    if not post_id:
+        return None
+    try:
+        import urllib.parse
+        qs = urllib.parse.urlencode({"fields": "text", "access_token": token})
+        data = tm.http_get_json(f"{THREADS_API}/{post_id}?{qs}")
+        txt = (data.get("text") or "").strip()
+        return txt or None
+    except Exception as e:  # noqa: BLE001
+        print(f"  元予想の取得失敗 ({post_id}): {e}")
+        return None
+
+
+def fetch_permalink(post_id, token):
+    """投稿のパーマリンク(URL)をThreads APIから取得。失敗時はNone."""
+    if not post_id:
+        return None
+    try:
+        import urllib.parse
+        qs = urllib.parse.urlencode({"fields": "permalink", "access_token": token})
+        data = tm.http_get_json(f"{THREADS_API}/{post_id}?{qs}")
+        url = (data.get("permalink") or "").strip()
+        return url or None
+    except Exception as e:  # noqa: BLE001
+        print(f"  パーマリンク取得失敗 ({post_id}): {e}")
+        return None
+
+
+def _publish(user_id, token, params) -> str:
+    """コンテナ作成→35秒待ち→公開。成功時は公開後のpost_id、失敗時はNone."""
+    c = tm.http_post(f"{THREADS_API}/{user_id}/threads",
+                     {**params, "access_token": token})
+    if not c.get("id"):
+        print(f"  コンテナ失敗: {c}")
+        return None
+    time.sleep(35)
+    r = tm.http_post(f"{THREADS_API}/{user_id}/threads_publish",
+                     {"creation_id": c["id"], "access_token": token})
+    if r.get("id"):
+        return r["id"]
+    print(f"  公開失敗: {r}")
+    return None
+
+
+def post_hit_new(entry, payout, token, user_id, log) -> bool:
+    """的中報告フロー(リプライにしない):
+      1) 元の予想をコピーした「新規投稿」を出す
+      2) その投稿のURLを取得
+      3) 「この予想⬇️ + URL」+ 的中結果 を貼った的中報告を新規投稿する
+    コピーやURL取得に失敗した場合は、元予想の本文を直接載せた
+    単独の的中報告にフォールバックする。
+    """
+    hit = build_hit_text(entry, payout, log)
+    original = fetch_post_text(entry.get("post_id"), token)
+
+    # 1) 予想をコピーして新規投稿
+    copy_url = None
+    if original:
         try:
-            c = tm.http_post(f"{THREADS_API}/{user_id}/threads", params)
-            if not c.get("id"):
-                print(f"  的中コンテナ失敗: {c}")
-                continue
-            time.sleep(35)
-            r = tm.http_post(
-                f"{THREADS_API}/{user_id}/threads_publish",
-                {"creation_id": c["id"], "access_token": token},
-            )
-            if r.get("id"):
-                mode = "リプライ" if "reply_to_id" in params else "通常投稿"
-                print(f"  的中投稿完了({mode})! post id = {r['id']}")
-                return True
-            print(f"  的中公開失敗: {r}")
+            copy_id = _publish(user_id, token,
+                               {"media_type": "TEXT", "text": original[:500]})
+            if copy_id:
+                print(f"  予想コピー投稿完了! post id = {copy_id}")
+                copy_url = fetch_permalink(copy_id, token)
         except Exception as e:  # noqa: BLE001
-            print(f"  的中投稿エラー: {e}")
+            print(f"  予想コピー投稿エラー: {e}")
+
+    # 2)+3) 的中報告本文を組む
+    if copy_url:
+        report = f"{hit}\n\nこの予想⬇️\n{copy_url}"
+    elif original:
+        # URLが取れなければ予想本文を直接載せる
+        report = f"{original}\n\n{hit}"
+    else:
+        report = hit
+    report = report[:500]
+
+    try:
+        rid = _publish(user_id, token, {"media_type": "TEXT", "text": report})
+        if rid:
+            print(f"  的中報告投稿完了(新規投稿)! post id = {rid}")
+            return True
+    except Exception as e:  # noqa: BLE001
+        print(f"  的中報告投稿エラー: {e}")
     return False
 
 
@@ -181,7 +245,7 @@ def main():
         if e["hit"] and not e.get("announced"):
             if user_id is None:
                 user_id = tm.get_user_id(token)
-            if post_hit_reply(e, payout, token, user_id, log):
+            if post_hit_new(e, payout, token, user_id, log):
                 e["announced"] = True
 
     if changed:
