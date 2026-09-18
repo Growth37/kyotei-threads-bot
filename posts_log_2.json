@@ -306,6 +306,9 @@
    "3-1-2",
    "3-1-5"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-2-3",
+  "payout": 370,
+  "hit": true
  }
 ]
