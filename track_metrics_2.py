@@ -56,9 +56,10 @@ def pace_line(log, entry) -> str:
     hits = sum(1 for e in res if e.get("hit"))
     total = len(res)
     rate = round(100 * hits / total) if total else 0
-    # 直近10戦
-    recent = sorted(res, key=lambda x: x.get("race_closed_at") or "")[-10:]
+    # 直近5戦
+    recent = sorted(res, key=lambda x: x.get("race_closed_at") or "")[-5:]
     r_hits = sum(1 for e in recent if e.get("hit"))
+    r_total = len(recent)
     # 今週(直近7日)
     now = datetime.now(JST)
     wk = [e for e in res if e.get("race_date") and
@@ -68,10 +69,13 @@ def pace_line(log, entry) -> str:
     streak = _streak(log)
 
     cands = [
-        f"直近{len(recent)}戦{r_hits}的中",
         f"累計的中率 {rate}%（{hits}/{total}）",
         f"今週 {w_hits}/{w_total} 的中ペース",
     ]
+    # 「直近N戦M的中」は半分以上的中している時のみ(2戦以上・的中率50%以上)。
+    # 5戦1的中や5戦2的中のような見栄えの悪いものは出さない。
+    if r_total >= 2 and r_hits * 2 >= r_total:
+        cands.insert(0, f"直近{r_total}戦{r_hits}的中")
     if streak >= 2:
         cands.append(f"{streak}連的中中")
     payout = entry.get("payout")
