@@ -186,7 +186,10 @@
    "3-2-1",
    "3-2-5"
   ],
-  "announced": false
+  "announced": false,
+  "result": "5-2-6",
+  "payout": 38200,
+  "hit": false
  },
  {
   "post_id": "18131821024662648",
