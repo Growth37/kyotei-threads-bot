@@ -63,7 +63,7 @@ def build_solid(h, t, s, f4, f5, tight: bool):
 
     本線 : ◎-{○▲}-{○▲△}
     絞り : ◎-{○▲}-{○▲}    (本線の中で一番硬い核)
-    抑え : ○頭・▲頭に◎を2着で置く保険 (tightなら本数を絞る)
+    抑え : ○頭・▲頭に◎を2着で置く保険
     合計10点以内・最低8点。tight(超明確)なら8点、通常は9点。
     """
     honsen_disp = f"{h}-{mm(t, s)}-{mm(t, s, f4)}"
@@ -151,6 +151,37 @@ def medium_score(race):
     val -= max(0.0, gap - 22) * 1.5
     val -= max(0.0, 6 - gap) * 1.0
     return val
+
+
+# レースのグレード番号: 1=SG, 2=G1, 3=G2, 4=G3, 5=一般 (boatraceopenapi v2)
+GENERAL_GRADE = 5
+
+
+def _is_general(race) -> bool:
+    """一般戦(グレード5)かどうか。グレード不明(公式サイト取得時)はFalse扱い。"""
+    return int(race.get("race_grade_number") or 0) == GENERAL_GRADE
+
+
+def _strong_challenger(race) -> bool:
+    """2・3・4号艇に『上手い(A1)』or『得意(全国/当地2連率が高い)』選手がいるか."""
+    for b in race.get("boats") or []:
+        if int(b.get("racer_boat_number") or 0) not in (2, 3, 4):
+            continue
+        cls = int(b.get("racer_class_number") or 4)
+        nat2 = float(b.get("racer_national_top_2_percent") or 0)
+        loc2 = float(b.get("racer_local_top_2_percent") or 0)
+        # A1(上手い) / 全国2連率45%以上(上手い) / 当地2連率45%以上(得意)
+        if cls == 1 or nat2 >= 45 or loc2 >= 45:
+            return True
+    return False
+
+
+def medium_eligible(race) -> bool:
+    """中穴狙いの対象レース条件:
+      ・一般戦のみ(SG/G1/G2/G3は除外)
+      ・2・3・4号艇に上手い(A1)or得意な選手がいる
+    """
+    return _is_general(race) and _strong_challenger(race)
 
 
 def _race_key(race):
@@ -246,15 +277,17 @@ def select(programs, now):
     medium_done = _medium_posted_today(now)
     remaining = _remaining_slots(now)
 
-    best_medium = max(cands, key=medium_score)
+    # 中穴は「一般戦で2・3・4号艇に上手い/得意な選手がいる」レースのみ対象
+    elig = [r for r in cands if medium_eligible(r)]
+    best_medium = max(elig, key=medium_score) if elig else None
     # 中穴を出すか判定 (1日1本まで・自動)
     want_medium = False
-    if not medium_done:
+    if not medium_done and best_medium is not None:
         ms = medium_score(best_medium)
-        # 残りスロットが少ない(=最後の方)なら候補があれば中穴、
+        # 残りスロットが少ない(=最後の方)なら対象があれば中穴、
         # それより前でも中穴度が高ければ前倒しで出す
         if remaining <= 1 and ms > -900:
-            want_medium = True  # 最終スロット付近: 候補があれば中穴を出す
+            want_medium = True  # 最終スロット付近: 対象があれば中穴を出す
         elif ms >= 70:
             want_medium = True  # 前倒し: 中穴度が特に高いレースだけ
 
