@@ -3,16 +3,16 @@
 
 posts_log_2.json の各投稿について、締切25分後以降にレース結果を照合し、
 買い目(本線∪抑え)の中に3連単の決着があれば「的中報告」を出す。
-的中報告はリプライにしない。まず元の予想をコピーした新規投稿を出し、
-その投稿のURLを「この予想⬇️」と一緒に貼った的中報告を新規投稿する。
+的中報告はリプライにしない。コピー投稿もしない。元の予想投稿のURLを
+「この予想⬇️」と一緒に貼った的中報告を新規投稿する。
 
 的中報告フォーマット(人間味なし):
-    ⚪-⚪-⚪　⚪⚪倍🎯
+    {会場}{R}R　⚪-⚪-⚪　⚪⚪倍🎯
 
     {回収・的中ペース系の一言}
 
     この予想⬇️
-    {コピーした予想投稿のURL}
+    {元の予想投稿のURL}
 
 環境変数:
   THREADS_ACCESS_TOKEN_2  @shantianzhi37 の長期アクセストークン
@@ -86,29 +86,18 @@ def pace_line(log, entry) -> str:
 
 
 def build_hit_text(entry, payout, log) -> str:
+    """的中報告の本文(会場R + 結果 + 倍率 + ペース一言)を組む."""
+    stadium = entry.get("stadium") or ""
+    rno = entry.get("race_number")
+    venue = f"{stadium}{rno}R" if rno else stadium
     combo = entry.get("result") or ""
     if payout:
         mult = int(payout) / 100
         mult_s = f"{mult:.1f}".rstrip("0").rstrip(".")
-        head = f"{combo}　{mult_s}倍🎯"
+        head = f"{venue}　{combo}　{mult_s}倍🎯"
     else:
-        head = f"{combo}　的中🎯"
+        head = f"{venue}　{combo}　的中🎯"
     return f"{head}\n\n{pace_line(log, entry)}"
-
-
-def fetch_post_text(post_id, token):
-    """元の予想投稿の本文をThreads APIから取得。失敗時はNone."""
-    if not post_id:
-        return None
-    try:
-        import urllib.parse
-        qs = urllib.parse.urlencode({"fields": "text", "access_token": token})
-        data = tm.http_get_json(f"{THREADS_API}/{post_id}?{qs}")
-        txt = (data.get("text") or "").strip()
-        return txt or None
-    except Exception as e:  # noqa: BLE001
-        print(f"  元予想の取得失敗 ({post_id}): {e}")
-        return None
 
 
 def fetch_permalink(post_id, token):
@@ -143,34 +132,15 @@ def _publish(user_id, token, params) -> str:
 
 
 def post_hit_new(entry, payout, token, user_id, log) -> bool:
-    """的中報告フロー(リプライにしない):
-      1) 元の予想をコピーした「新規投稿」を出す
-      2) その投稿のURLを取得
-      3) 「この予想⬇️ + URL」+ 的中結果 を貼った的中報告を新規投稿する
-    コピーやURL取得に失敗した場合は、元予想の本文を直接載せた
-    単独の的中報告にフォールバックする。
+    """的中報告フロー(リプライにしない・コピー投稿もしない):
+      元の予想投稿のURLを取得し、
+      「会場R 結果 倍率🎯 / ペース一言 / この予想⬇️ + 元予想URL」を新規投稿する。
+      URL取得に失敗した場合はURL行なしで的中報告のみ投稿する。
     """
     hit = build_hit_text(entry, payout, log)
-    original = fetch_post_text(entry.get("post_id"), token)
-
-    # 1) 予想をコピーして新規投稿
-    copy_url = None
-    if original:
-        try:
-            copy_id = _publish(user_id, token,
-                               {"media_type": "TEXT", "text": original[:500]})
-            if copy_id:
-                print(f"  予想コピー投稿完了! post id = {copy_id}")
-                copy_url = fetch_permalink(copy_id, token)
-        except Exception as e:  # noqa: BLE001
-            print(f"  予想コピー投稿エラー: {e}")
-
-    # 2)+3) 的中報告本文を組む
-    if copy_url:
-        report = f"{hit}\n\nこの予想⬇️\n{copy_url}"
-    elif original:
-        # URLが取れなければ予想本文を直接載せる
-        report = f"{original}\n\n{hit}"
+    permalink = fetch_permalink(entry.get("post_id"), token)
+    if permalink:
+        report = f"{hit}\n\nこの予想⬇️\n{permalink}"
     else:
         report = hit
     report = report[:500]
