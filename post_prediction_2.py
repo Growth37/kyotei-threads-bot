@@ -2,8 +2,10 @@
 """競艇予想を @shantianzhi37 (2号アカウント) へ自動投稿するスクリプト.
 
 1号bot(post_prediction.py)のデータ取得/スコアリング/投稿処理を流用しつつ、
-- 全会場から「堅いレース」を中心に、1日1レースだけ「中穴狙い」を自動割当
-- 本線 / 絞り / 抑え の3ブロック(合計10点以内)を生成
+- 堅いレースは @r_no_yosou 寄りの「◎1着ながし」中心(9〜11点)で構成
+- 1号艇A1中心に厳選。無ければ厳選せず通常のレースを選んで投稿
+- 1日1レースだけ「中穴狙い」を自動割当(一般戦・2〜4号艇に上手い/得意選手)
+- 本線 / 絞り / 抑え の3ブロックで投稿
 - 人間味なしのシンプルなフォーマットで投稿
 - @r_no_yosou(posts_log.json)と同じレースは避ける
 - 記録は posts_log_2.json
@@ -27,7 +29,7 @@ score_boat = eng.score_boat
 LOG_FILE = "posts_log_2.json"
 OTHER_LOG = "posts_log.json"  # @r_no_yosou 側(重複回避用)
 
-# 6投稿の予定時刻(JST)。中穴狙いの自動割当に使う。
+# 6投稿の予定時刻(JST)。中穴いの自動割当に使う。
 SCHEDULE = ["10:14", "11:36", "12:53", "15:05", "16:29", "18:47"]
 
 # この時間帯は必ず「堅いレース」にする(中穴を割り当てない)
@@ -59,32 +61,27 @@ def _expand2(head, second, thirds):
 
 
 def build_solid(h, t, s, f4, f5, tight: bool):
-    """堅いレース用の 本線/絞り/抑え を組む.
+    """堅いレース用の 本線/絞り/抑え を組む(@r_no_yosou 寄り = ◎1着ながし中心).
 
-    本線 : ◎-{○▲}-{○▲△}
-    絞り : ◎-{○▲}-{○▲}    (本線の中で一番硬い核)
-    抑え : ○頭・▲頭に◎を2着で置く保険
-    合計10点以内・最低8点。tight(超明確)なら8点、通常は9点。
+    本線 : ◎-{○▲△}-{○▲△⑤}    ◎1着ながし(9点)。的中の主力。
+    絞り : ◎-{○▲}-{○▲△}      本線の中で一番硬い核(4点・表示用サブセット)
+    抑え : ○-◎-{▲△}           本命が2着に沈んだ時の薄い保険(2点)
+    合計 : 通常 11点 / 超本命(tight)は保険を省いて ◎1着ながし 9点に集中。
+    ※どのケースも 9〜11点に収まる。
     """
-    honsen_disp = f"{h}-{mm(t, s)}-{mm(t, s, f4)}"
-    honsen = _expand(h, [t, s], [t, s, f4])
-    shibori_disp = f"{h}-{mm(t, s)}-{mm(t, s)}"
-    shibori = _expand(h, [t, s], [t, s])
+    honsen_disp = f"{h}-{mm(t, s, f4)}-{mm(t, s, f4, f5)}"
+    honsen = _expand(h, [t, s, f4], [t, s, f4, f5])          # 9点(◎1着ながし)
+    shibori_disp = f"{h}-{mm(t, s)}-{mm(t, s, f4)}"
+    shibori = _expand(h, [t, s], [t, s, f4])                 # 4点(核・サブセット)
 
-    osae_lines = []
-    osae = []
     if tight:
-        # 超本命レース: ○頭2点 + ▲頭2点 (合計 4+4=8点。最低8点を保証)
-        osae_lines.append(f"{t}-{h}-{mm(s, f4)}")
-        osae += _expand2(t, h, [s, f4])
-        osae_lines.append(f"{s}-{h}-{mm(t, f4)}")
-        osae += _expand2(s, h, [t, f4])
+        # 超本命レース: ◎1着ながし9点に一点集中(保険なし)
+        osae_lines = []
+        osae = []
     else:
-        # 通常: ○頭3点 + ▲頭2点 (合計 4+5=9点)
-        osae_lines.append(f"{t}-{h}-{mm(s, f4, f5)}")
-        osae += _expand2(t, h, [s, f4, f5])
-        osae_lines.append(f"{s}-{h}-{mm(t, f4)}")
-        osae += _expand2(s, h, [t, f4])
+        # 通常: ○頭に◎を2着で置く薄い保険を2点だけ
+        osae_lines = [f"{t}-{h}-{mm(s, f4)}"]
+        osae = _expand2(t, h, [s, f4])                       # 2点(t-h-s, t-h-f4)
     return {
         "honsen_disp": honsen_disp, "honsen": honsen,
         "shibori_disp": shibori_disp, "shibori": shibori,
@@ -93,7 +90,7 @@ def build_solid(h, t, s, f4, f5, tight: bool):
 
 
 def build_medium(h, t, s, f4, f5):
-    """中穴狙い用の 本線/絞り/抑え を組む.
+    """中穴い用の 本線/絞り/抑え を組む(継続).
 
     本線 : ○頭で狙う中穴ゾーン  ○-{◎▲}-{◎▲△}
     絞り : ○-{◎▲}-{◎▲}
@@ -135,6 +132,22 @@ def solidity(race):
     st = float(top.get("racer_average_start_timing") or 0.25)
     val += max(0.0, (0.20 - st)) * 30
     return val
+
+
+def _lane1_a1_solid(race) -> bool:
+    """本命(スコア1位)が『1号艇のA1』かどうか。
+    バックテストで的中率が大きく上がる、@r_no_yosou と同じ厳選条件。
+    """
+    top = max(race["boats"], key=score_boat)
+    return (int(top.get("racer_boat_number") or 0) == 1
+            and int(top.get("racer_class_number") or 4) == 1)
+
+
+def pick_solid(cands):
+    """堅いレースを選ぶ。1号艇A1中心に厳選し、無ければ厳選せず通常から選ぶ."""
+    preferred = [r for r in cands if _lane1_a1_solid(r)]
+    pool = preferred if preferred else cands
+    return max(pool, key=solidity)
 
 
 def medium_score(race):
@@ -272,7 +285,7 @@ def select(programs, now):
 
     # 11:36 / 15:05 の枠は必ず堅いレース(中穴を割り当てない)
     if _current_slot(now) in FORCE_SOLID:
-        return max(cands, key=solidity), "堅い"
+        return pick_solid(cands), "堅い"
 
     medium_done = _medium_posted_today(now)
     remaining = _remaining_slots(now)
@@ -294,8 +307,8 @@ def select(programs, now):
     if want_medium:
         return best_medium, "中穴"
 
-    best_solid = max(cands, key=solidity)
-    return best_solid, "堅い"
+    # 堅い: 1号艇A1中心に厳選(無ければ通常から選定)
+    return pick_solid(cands), "堅い"
 
 
 # ===== 投稿本文 =========================================================
@@ -313,10 +326,11 @@ def build_post(race, blocks, mode) -> str:
     lines.append("")
     lines.append("絞り")
     lines.append(blocks["shibori_disp"])
-    lines.append("")
-    lines.append("抑え")
-    for o in blocks["osae_lines"]:
-        lines.append(o)
+    if blocks.get("osae_lines"):
+        lines.append("")
+        lines.append("抑え")
+        for o in blocks["osae_lines"]:
+            lines.append(o)
     return "\n".join(lines)[:500]
 
 
