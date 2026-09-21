@@ -196,31 +196,39 @@ def main():
     changed = False
 
     for e in log:
-        if e.get("result"):
-            continue
-        try:
-            closed = datetime.strptime(
-                e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
-            ).replace(tzinfo=JST)
-        except (ValueError, KeyError):
-            continue
-        if now < closed + timedelta(minutes=25):
-            continue
-        res = tm.find_race_result(e)
-        if not res:
-            continue
-        combo, payout = res
-        e["result"] = combo
-        e["payout"] = payout
-        e["hit"] = combo in (e.get("combos") or [])
-        changed = True
-        mark = "🎯的中!" if e["hit"] else "不的中"
-        print(f"{e['stadium']}{e['race_number']}R 結果 {combo} → {mark}")
-        if e["hit"] and not e.get("announced"):
+        # 1) まだ結果が出ていない投稿はレース結果を照合する
+        if not e.get("result"):
+            try:
+                closed = datetime.strptime(
+                    e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
+                ).replace(tzinfo=JST)
+            except (ValueError, KeyError):
+                continue
+            if now < closed + timedelta(minutes=25):
+                continue
+            res = tm.find_race_result(e)
+            if not res:
+                continue
+            combo, payout = res
+            e["result"] = combo
+            e["payout"] = payout
+            e["hit"] = combo in (e.get("combos") or [])
+            changed = True
+            mark = "🎯的中!" if e["hit"] else "不的中"
+            print(f"{e['stadium']}{e['race_number']}R 結果 {combo} → {mark}")
+
+        # 2) 的中していてまだ的中報告を出していない投稿は必ず投稿する。
+        #    結果が既に出ていても、前回投稿に失敗した分をここで再送する
+        #    (これが無いと『的中してるのに報告が無い』取りこぼしが起きる)。
+        if e.get("result") and e.get("hit") and not e.get("announced"):
             if user_id is None:
                 user_id = tm.get_user_id(token)
-            if post_hit_new(e, payout, token, user_id, log):
+            if post_hit_new(e, e.get("payout"), token, user_id, log):
                 e["announced"] = True
+                changed = True
+            else:
+                print(f"  ⚠ 的中報告に失敗。次回の実行で再送します: "
+                      f"{e['stadium']}{e['race_number']}R")
 
     if changed:
         with open(LOG_FILE, "w", encoding="utf-8") as f:
