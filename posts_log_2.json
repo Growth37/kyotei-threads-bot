@@ -1607,6 +1607,9 @@
    "1-4-3",
    "1-4-5"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-2-4",
+  "payout": 980,
+  "hit": true
  }
 ]
