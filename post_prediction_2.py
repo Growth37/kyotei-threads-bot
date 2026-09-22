@@ -29,7 +29,7 @@ score_boat = eng.score_boat
 LOG_FILE = "posts_log_2.json"
 OTHER_LOG = "posts_log.json"  # @r_no_yosou 側(重複回避用)
 
-# 6投稿の予定時刻(JST)。中穴いの自動割当に使う。
+# 6投稿の予定時刻(JST)。中穴狙いの自動割当に使う。
 SCHEDULE = ["10:14", "11:36", "12:53", "15:05", "16:29", "18:47"]
 
 # この時間帯は必ず「堅いレース」にする(中穴を割り当てない)
@@ -90,7 +90,7 @@ def build_solid(h, t, s, f4, f5, tight: bool):
 
 
 def build_medium(h, t, s, f4, f5):
-    """中穴い用の 本線/絞り/抑え を組む(継続).
+    """中穴狙い用の 本線/絞り/抑え を組む(継続).
 
     本線 : ○頭で狙う中穴ゾーン  ○-{◎▲}-{◎▲△}
     絞り : ○-{◎▲}-{◎▲}
@@ -312,15 +312,87 @@ def select(programs, now):
 
 
 # ===== 投稿本文 =========================================================
+def _rn(b) -> str:
+    """選手名(空白除去)."""
+    return str(b.get("racer_name") or "").replace("　", "").replace(" ", "")
+
+
+def _cls(b) -> str:
+    """クラス表記(A1/A2/B1/B2)."""
+    return eng.CLASSES.get(int(b.get("racer_class_number") or 4), "")
+
+
+def build_reason(race, mode) -> str:
+    """レースごとに変わる短い「狙い・根拠」を1行返す(毎回同じ定型を避ける).
+
+    実データ(級別・ST・全国/当地2連率・号艇)から、その日そのレースで
+    成り立つ根拠だけを候補にして選ぶ。同じレースなら同じ、別レースなら
+    別の一言になるようにシード固定。
+    """
+    import random
+    boats = sorted(race["boats"], key=score_boat, reverse=True)
+    if len(boats) < 3:
+        return ""
+    h, o, a = boats[0], boats[1], boats[2]
+
+    def ln(b):
+        return int(b.get("racer_boat_number") or 0)
+
+    def st(b):
+        return float(b.get("racer_average_start_timing") or 0.20)
+
+    def nat(b):
+        return float(b.get("racer_national_top_2_percent") or 0)
+
+    def loc(b):
+        return float(b.get("racer_local_top_2_percent") or 0)
+
+    seed = int(race["race_stadium_number"]) * 100 + int(race["race_number"])
+    rng = random.Random(seed)
+
+    if mode == "中穴":
+        head = []
+        if ln(o) in (2, 3, 4) and loc(o) >= 40:
+            head.append(f"○{ln(o)}号艇{_rn(o)}が当地2連率{loc(o):.0f}%で狙える。")
+        if ln(o) in (2, 3, 4) and nat(o) >= 45:
+            head.append(f"○{ln(o)}号艇{_rn(o)}が全国2連率{nat(o):.0f}%と好調。")
+        if _cls(o) == "A1":
+            head.append(f"○{ln(o)}号艇{_rn(o)}はA1で逆転十分。")
+        if not head:
+            head.append(f"○{ln(o)}号艇{_rn(o)}を軸に一発狙い。")
+        tail = ["◎の頭は割れるとみて○頭を本線に。",
+                "本命が抜けきらない一戦、中穴に妙味。",
+                "◎頭は薄めとみて相手上位に厚く。"]
+        return rng.choice(head) + "\n" + rng.choice(tail)
+
+    # 堅い
+    head = []
+    if ln(h) == 1 and _cls(h) == "A1":
+        head.append(f"◎1号艇{_rn(h)}はA1でイン信頼度高め。")
+    if st(h) <= 0.15:
+        head.append(f"◎{ln(h)}号艇{_rn(h)}はST{st(h):.2f}と速く先手濃厚。")
+    if nat(h) >= 50:
+        head.append(f"◎{ln(h)}号艇{_rn(h)}が全国2連率{nat(h):.0f}%で力上位。")
+    if not head:
+        head.append(f"◎{ln(h)}号艇{_rn(h)}が総合力トップ。")
+    tail = [f"相手は○{ln(o)}▲{ln(a)}中心。",
+            "2着に○▲を厚めに構成。",
+            "頭は堅く、ヒモで少し広げた。"]
+    return rng.choice(head) + "\n" + rng.choice(tail)
+
+
 def build_post(race, blocks, mode) -> str:
     stadium = STADIUMS.get(int(race["race_stadium_number"]), "不明")
     rno = int(race["race_number"])
     closed = race["race_closed_at"][11:16]
 
-    lines = [f"{stadium}{rno}R  {closed}〆", ""]
+    lines = [f"{stadium}{rno}R  {closed}〆"]
     if mode == "中穴":
         lines.append("中穴狙い")
-        lines.append("")
+    reason = build_reason(race, mode)
+    if reason:
+        lines.append(reason)
+    lines.append("")
     lines.append("本線")
     lines.append(blocks["honsen_disp"])
     lines.append("")
