@@ -71,12 +71,12 @@ def pace_line(log, entry) -> str:
     cands = [
         f"今週 {w_hits}/{w_total} 的中ペース",
     ]
-    # 「直近N戦M的中」は半分以上的中している時のみ(2戦以上・的中率50%以上)。
+    # 「直近N戦M的中」は半分以上的中している時のみ(2戦以上・的中率65%超)。
     # 5戦1的中や5戦2的中のような見栄えの悪いものは出さない。
-    if r_total >= 2 and r_hits * 2 >= r_total:
+    if r_total >= 2 and r_hits / r_total > 0.65:
         cands.insert(0, f"直近{r_total}戦{r_hits}的中")
     if streak >= 2:
-        cands.append(f"{streak}連的中中")
+        cands.append(f"{streak}連勝中🎯")
     payout = entry.get("payout")
     if payout and int(payout) >= 5000:
         cands.append(f"高配当回収（{int(payout):,}円）")
