@@ -69,7 +69,6 @@ def pace_line(log, entry) -> str:
     streak = _streak(log)
 
     cands = [
-        f"累計的中率 {rate}%（{hits}/{total}）",
         f"今週 {w_hits}/{w_total} 的中ペース",
     ]
     # 「直近N戦M的中」は半分以上的中している時のみ(2戦以上・的中率50%以上)。
