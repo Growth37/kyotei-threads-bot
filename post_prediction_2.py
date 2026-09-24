@@ -322,12 +322,25 @@ def _cls(b) -> str:
     return eng.CLASSES.get(int(b.get("racer_class_number") or 4), "")
 
 
-def build_reason(race, mode) -> str:
-    """レースごとに変わる短い「狙い・根拠」を1行返す(毎回同じ定型を避ける).
+def _recent_reasons(n: int = 4):
+    """直近n件の投稿で使った reason を返す(連続で同じ言い回しを避けるため)."""
+    if not os.path.exists(LOG_FILE):
+        return []
+    try:
+        with open(LOG_FILE, encoding="utf-8") as f:
+            log = json.load(f)
+        out = [e.get("reason", "") for e in log if e.get("reason")]
+        return out[-n:]
+    except Exception:  # noqa: BLE001
+        return []
 
-    実データ(級別・ST・全国/当地2連率・号艇)から、その日そのレースで
-    成り立つ根拠だけを候補にして選ぶ。同じレースなら同じ、別レースなら
-    別の一言になるようにシード固定。
+
+def build_reason(race, mode) -> str:
+    """レースごとに変わる短い「狙い・根拠」を2行返す。
+
+    実データ(級別・ST・全国/当地2連率・号艇)から根拠を組み立てる。
+    語尾(言い回し)は候補を多めに用意し、直近の投稿で使ったものは
+    連続で使わない(同じ言い回しの繰り返しを防ぐ)。
     """
     import random
     boats = sorted(race["boats"], key=score_boat, reverse=True)
@@ -347,8 +360,8 @@ def build_reason(race, mode) -> str:
     def loc(b):
         return float(b.get("racer_local_top_2_percent") or 0)
 
-    seed = int(race["race_stadium_number"]) * 100 + int(race["race_number"])
-    rng = random.Random(seed)
+    rng = random.Random()  # 毎回ランダム(直近と被らないよう選び直す)
+    recent = "".join(_recent_reasons())
 
     if mode == "中穴":
         head = []
@@ -358,27 +371,42 @@ def build_reason(race, mode) -> str:
             head.append(f"○{ln(o)}号艇{_rn(o)}が全国2連率{nat(o):.0f}%と好調。")
         if _cls(o) == "A1":
             head.append(f"○{ln(o)}号艇{_rn(o)}はA1で逆転十分。")
-        if not head:
-            head.append(f"○{ln(o)}号艇{_rn(o)}を軸に一発狙い。")
+        head.append(f"○{ln(o)}号艇{_rn(o)}を軸に一発狙い。")
         tail = ["◎の頭は割れるとみて○頭を本線に。",
                 "本命が抜けきらない一戦、中穴に妙味。",
-                "◎頭は薄めとみて相手上位に厚く。"]
-        return rng.choice(head) + "\n" + rng.choice(tail)
+                "◎頭は薄めとみて相手上位に厚く。",
+                "波乱含み、○の頭から仕掛ける。",
+                "本命一辺倒は危険、相手を主軸に。",
+                "混戦模様、配当妙味を取りにいく。",
+                "堅く収まらないとみて中穴勝負。",
+                "展開ひとつで一変、穴を狙う。"]
+    else:
+        head = []
+        if ln(h) == 1 and _cls(h) == "A1":
+            head.append(f"◎1号艇{_rn(h)}はA1でイン信頼度高め。")
+            head.append(f"◎1号艇{_rn(h)}はA1、インから押し切り濃厚。")
+        if st(h) <= 0.15:
+            head.append(f"◎{ln(h)}号艇{_rn(h)}はST{st(h):.2f}と速く先手濃厚。")
+            head.append(f"◎{ln(h)}号艇{_rn(h)}のスタート{st(h):.2f}が武器。")
+        if nat(h) >= 50:
+            head.append(f"◎{ln(h)}号艇{_rn(h)}が全国2連率{nat(h):.0f}%で力上位。")
+            head.append(f"◎{ln(h)}号艇{_rn(h)}は地力上位で信頼できる。")
+        if not head:
+            head.append(f"◎{ln(h)}号艇{_rn(h)}が総合力トップ。")
+            head.append(f"◎{ln(h)}号艇{_rn(h)}を素直に軸で。")
+        tail = [f"相手は○{ln(o)}▲{ln(a)}中心。",
+                "2着に○▲を厚めに構成。",
+                "軸は信頼、2着づけで勝負。",
+                f"ヒモは{ln(o)}{ln(a)}を絡めて手広く。",
+                "本線は薄く、抑えで保険をかけた。",
+                "頭固定でヒモ流しの組み立て。",
+                "取りこぼし防止に2着を広めに。",
+                "的中率重視でコンパクトに。"]
 
-    # 堅い
-    head = []
-    if ln(h) == 1 and _cls(h) == "A1":
-        head.append(f"◎1号艇{_rn(h)}はA1でイン信頼度高め。")
-    if st(h) <= 0.15:
-        head.append(f"◎{ln(h)}号艇{_rn(h)}はST{st(h):.2f}と速く先手濃厚。")
-    if nat(h) >= 50:
-        head.append(f"◎{ln(h)}号艇{_rn(h)}が全国2連率{nat(h):.0f}%で力上位。")
-    if not head:
-        head.append(f"◎{ln(h)}号艇{_rn(h)}が総合力トップ。")
-    tail = [f"相手は○{ln(o)}▲{ln(a)}中心。",
-            "2着に○▲を厚めに構成。",
-            "頭は堅く、ヒモで少し広げた。"]
-    return rng.choice(head) + "\n" + rng.choice(tail)
+    # 直近で使った語尾(tail)・頭(head)は連続で使わない。全滅時は全候補から。
+    tail_pool = [t for t in tail if t not in recent] or tail
+    head_pool = [x for x in head if x not in recent] or head
+    return rng.choice(head_pool) + "\n" + rng.choice(tail_pool)
 
 
 def build_post(race, blocks, mode) -> str:
@@ -390,6 +418,7 @@ def build_post(race, blocks, mode) -> str:
     if mode == "中穴":
         lines.append("中穴狙い")
     reason = build_reason(race, mode)
+    race["_reason"] = reason  # append_log で記録し、次回以降の連続重複を避ける
     if reason:
         lines.append(reason)
     lines.append("")
@@ -423,6 +452,7 @@ def append_log(post_id, race, now, blocks, mode):
         "race_number": int(race["race_number"]),
         "race_closed_at": race["race_closed_at"],
         "mode": mode,
+        "reason": race.get("_reason", ""),
         "honsen": blocks["honsen"],
         "shibori": blocks["shibori"],
         "osae": blocks["osae"],
