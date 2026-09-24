@@ -80,6 +80,20 @@ def pace_line(log, entry) -> str:
     payout = entry.get("payout")
     if payout and int(payout) >= 5000:
         cands.append(f"高配当回収（{int(payout):,}円）")
+    # モード・決着系 / 節目
+    combo = entry.get("result") or ""
+    win_lane = combo.split("-")[0] if combo else ""
+    honsen = entry.get("honsen") or []
+    fav = honsen[0].split("-")[0] if honsen else ""
+    mode = entry.get("mode")
+    if mode == "中穴":
+        cands.append("中穴ズバリ🎯")
+    if mode == "堅い" and win_lane and win_lane == fav:
+        cands.append("本命ど真ん中🎯")
+    if win_lane == "1":
+        cands.append("イン逃げ的中🎯")
+    if hits in (10, 25, 50, 100):
+        cands.append(f"通算{hits}的中🎯")
     if not cands:
         return ""
     rng = random.Random(str(entry.get("post_id")))
@@ -223,14 +237,28 @@ def main():
         #    結果が既に出ていても、前回投稿に失敗した分をここで再送する
         #    (これが無いと『的中してるのに報告が無い』取りこぼしが起きる)。
         if e.get("result") and e.get("hit") and not e.get("announced"):
-            if user_id is None:
-                user_id = tm.get_user_id(token)
-            if post_hit_new(e, e.get("payout"), token, user_id, log):
-                e["announced"] = True
+            # 締切から1.5時間以内の的中だけ報告する(古い的中は投稿しない)
+            try:
+                closed_h = datetime.strptime(
+                    e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
+                ).replace(tzinfo=JST)
+                fresh = (now - closed_h) <= timedelta(minutes=90)
+            except (ValueError, KeyError):
+                fresh = False
+            if not fresh:
+                e["announced"] = True  # 古すぎるので投稿せずスキップ
                 changed = True
-            else:
-                print(f"  ⚠ 的中報告に失敗。次回の実行で再送します: "
+                print(f"  古い的中のため報告スキップ: "
                       f"{e['stadium']}{e['race_number']}R")
+            elif True:
+                if user_id is None:
+                    user_id = tm.get_user_id(token)
+                if post_hit_new(e, e.get("payout"), token, user_id, log):
+                    e["announced"] = True
+                    changed = True
+                else:
+                    print(f"  ⚠ 的中報告に失敗。次回の実行で再送します: "
+                          f"{e['stadium']}{e['race_number']}R")
 
     if changed:
         with open(LOG_FILE, "w", encoding="utf-8") as f:
