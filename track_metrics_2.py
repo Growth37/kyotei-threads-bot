@@ -68,9 +68,9 @@ def pace_line(log, entry) -> str:
     w_total = len(wk)
     streak = _streak(log)
 
-    cands = [
-        f"今週 {w_hits}/{w_total} 的中ペース",
-    ]
+    cands = []
+    if w_total and w_hits / w_total >= 0.65:
+        cands.append(f"今週 {w_hits}/{w_total} 的中ペース")
     # 「直近N戦M的中」は半分以上的中している時のみ(2戦以上・的中率65%超)。
     # 5戦1的中や5戦2的中のような見栄えの悪いものは出さない。
     if r_total >= 2 and r_hits / r_total > 0.65:
@@ -80,6 +80,8 @@ def pace_line(log, entry) -> str:
     payout = entry.get("payout")
     if payout and int(payout) >= 5000:
         cands.append(f"高配当回収（{int(payout):,}円）")
+    if not cands:
+        return ""
     rng = random.Random(str(entry.get("post_id")))
     return rng.choice(cands)
 
@@ -96,7 +98,8 @@ def build_hit_text(entry, payout, log) -> str:
         head = f"{venue}　{combo}　{mult_s}倍🎯"
     else:
         head = f"{venue}　{combo}　的中🎯"
-    return f"{head}\n\n{pace_line(log, entry)}"
+    pace = pace_line(log, entry)
+    return f"{head}\n\n{pace}" if pace else head
 
 
 def fetch_permalink(post_id, token):
