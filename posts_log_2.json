@@ -1066,7 +1066,7 @@
    "4-2-1",
    "4-2-5"
   ],
-  "announced": false,
+  "announced": true,
   "result": "4-2-1",
   "payout": 2560,
   "hit": true
