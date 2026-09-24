@@ -1988,7 +1988,10 @@
    "1-4-3",
    "1-4-6"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-2-4",
+  "payout": 680,
+  "hit": true
  },
  {
   "post_id": "18195851347388617",
