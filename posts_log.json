@@ -13123,9 +13123,14 @@
    "1-3-2",
    "1-3-4"
   ],
-  "views": {},
+  "views": {
+   "1h": 562
+  },
   "result": "1-6-2",
   "payout": 6620,
-  "hit": false
+  "hit": false,
+  "views_at": {
+   "1h": 1.35
+  }
  }
 ]
