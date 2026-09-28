@@ -273,6 +273,9 @@ def candidate_races(programs, now):
         if not (20 <= delta <= 120):
             continue
         window.append(race)
+    skip = eng._manual_skip_today(now)
+    window = [r for r in window
+              if (int(r["race_stadium_number"]), int(r["race_number"])) not in skip]
     deduped = [r for r in window if _race_key(r) not in posted]
     return deduped if deduped else window
 
