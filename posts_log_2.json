@@ -3159,7 +3159,10 @@
    "3-2-1",
    "3-2-4"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-3-2",
+  "payout": 1530,
+  "hit": true
  },
  {
   "post_id": "18036549935652129",
