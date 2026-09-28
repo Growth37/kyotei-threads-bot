@@ -251,6 +251,17 @@ def _posted_keys_today(now) -> set:
     return keys
 
 
+def _manual_skip_today(now) -> set:
+    """manual_skip.json の本日分(場番号, R)を自動投稿の除外対象として返す."""
+    today = now.strftime("%Y-%m-%d")
+    try:
+        with open("manual_skip.json", encoding="utf-8") as f:
+            data = json.load(f)
+        return {(int(a), int(b)) for a, b in (data.get(today) or [])}
+    except Exception:  # noqa: BLE001
+        return set()
+
+
 def pick_race(programs: list, now: datetime):
     """締切がこれから来るレースのうち、直近1〜2時間のものを選ぶ."""
     candidates = []
@@ -270,6 +281,13 @@ def pick_race(programs: list, now: datetime):
         return None
     # 本日すでにどちらかのbotが投稿したレースは避ける(重複回避)。
     # ただし、それで候補が全滅する時間帯は臨機応変に重複を許容して投稿する。
+    skip = _manual_skip_today(now)
+    candidates = [
+        c for c in candidates
+        if (int(c[1]["race_stadium_number"]), int(c[1]["race_number"])) not in skip
+    ]
+    if not candidates:
+        return None
     posted = _posted_keys_today(now)
     deduped = [
         c for c in candidates
