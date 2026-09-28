@@ -7,6 +7,10 @@ on:
     - cron: '8,28,48 2-13 * * *'
   workflow_dispatch:
 
+concurrency:
+  group: track-r-no-yosou
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
