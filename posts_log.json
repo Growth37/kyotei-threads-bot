@@ -14099,6 +14099,15 @@
    "1-6-2",
    "1-6-4"
   ],
-  "views": {}
+  "views": {
+   "1h": 454
+  },
+  "views_at": {
+   "1h": 1.05
+  },
+  "result": "1-6-2",
+  "payout": 1250,
+  "hit": true,
+  "hit_posted": true
  }
 ]
