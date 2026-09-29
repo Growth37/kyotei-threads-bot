@@ -22,6 +22,10 @@ on:
         required: false
         default: '0'
 
+concurrency:
+  group: post-r-no-yosou
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
