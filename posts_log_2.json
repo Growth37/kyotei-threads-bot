@@ -3684,7 +3684,10 @@
    "1-5-3",
    "1-5-6"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-2-3",
+  "payout": 1060,
+  "hit": true
  },
  {
   "post_id": "17878590741554743",
