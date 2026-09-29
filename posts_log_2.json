@@ -3552,6 +3552,9 @@
    "1-5-3",
    "1-5-4"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-4-5",
+  "payout": 980,
+  "hit": true
  }
 ]
