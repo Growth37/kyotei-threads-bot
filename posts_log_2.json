@@ -3813,7 +3813,10 @@
    "1-6-4",
    "1-6-5"
   ],
-  "announced": false
+  "announced": false,
+  "result": "5-2-4",
+  "payout": 55410,
+  "hit": false
  },
  {
   "post_id": "17950488183328159",
