@@ -4599,6 +4599,9 @@
    "1-6-3",
    "1-6-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-6-5",
+  "payout": 6530,
+  "hit": false
  }
 ]
