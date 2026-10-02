@@ -15247,10 +15247,15 @@
    "1-3-2",
    "1-3-4"
   ],
-  "views": {},
+  "views": {
+   "1h": 452
+  },
   "result": "1-4-2",
   "payout": 1120,
   "hit": true,
-  "hit_posted": true
+  "hit_posted": true,
+  "views_at": {
+   "1h": 1.32
+  }
  }
 ]
