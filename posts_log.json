@@ -15556,7 +15556,11 @@
   },
   "views_at": {
    "1h": 1.31
-  }
+  },
+  "result": "1-6-5",
+  "payout": 2400,
+  "hit": true,
+  "hit_posted": true
  },
  {
   "post_id": "18114091301114397",
