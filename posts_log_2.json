@@ -4860,7 +4860,10 @@
    "1-6-3",
    "1-6-4"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-2-4",
+  "payout": 1450,
+  "hit": true
  },
  {
   "post_id": "17945332260344096",
