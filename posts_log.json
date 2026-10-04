@@ -16025,6 +16025,15 @@
    "1-4-2",
    "1-4-5"
   ],
-  "views": {}
+  "views": {
+   "1h": 365
+  },
+  "views_at": {
+   "1h": 1.09
+  },
+  "result": "1-2-3",
+  "payout": 1970,
+  "hit": true,
+  "hit_posted": true
  }
 ]
