@@ -5033,6 +5033,9 @@
    "1-5-3",
    "1-5-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-4-5",
+  "payout": 1220,
+  "hit": false
  }
 ]
