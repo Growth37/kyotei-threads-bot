@@ -5426,6 +5426,9 @@
    "1-6-4",
    "1-6-5"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-3-4",
+  "payout": 450,
+  "hit": true
  }
 ]
