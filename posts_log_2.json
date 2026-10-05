@@ -5250,7 +5250,10 @@
    "2-4-1",
    "2-4-3"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-2-4",
+  "payout": 700,
+  "hit": true
  },
  {
   "post_id": "18347913010269238",
