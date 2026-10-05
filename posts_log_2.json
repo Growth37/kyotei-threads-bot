@@ -5382,7 +5382,10 @@
    "1-4-3",
    "1-4-6"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-2-6",
+  "payout": 930,
+  "hit": true
  },
  {
   "post_id": "18112603631125887",
