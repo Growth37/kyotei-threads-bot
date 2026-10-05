@@ -292,6 +292,46 @@ def write_csv(log: list):
         print(f"xlsx生成スキップ: {e}")
 
 
+def post_reply(entry, token, user_id) -> bool:
+    """予想投稿へのリプライで『買い目 ◯◯倍的中🎯』＋簡単な一言を出す."""
+    import random
+    combo = entry.get("result") or ""
+    payout = entry.get("payout")
+    if payout:
+        mult = int(payout) / 100
+        mult_s = f"{mult:.1f}".rstrip("0").rstrip(".")
+        head = f"{combo}　{mult_s}倍的中🎯"
+    else:
+        head = f"{combo}　的中🎯"
+    comments = [
+        "しっかり獲れた一本！", "自信の本命、的中や🎯", "読み通りの決着！",
+        "ナイス的中、おめでとう！", "この並び通りやったな！", "本線ズバリ！",
+        "気持ちよく的中！", "今日もしっかり的中や！",
+    ]
+    rng = random.Random(str(entry.get("post_id")))
+    text = head + "\n" + rng.choice(comments)
+    pid = entry.get("post_id")
+    if not pid:
+        return False
+    try:
+        c = http_post(f"{THREADS_API}/{user_id}/threads",
+                      {"media_type": "TEXT", "text": text,
+                       "reply_to_id": pid, "access_token": token})
+        if not c.get("id"):
+            print(f"  リプライコンテナ失敗: {c}")
+            return False
+        time.sleep(35)
+        r = http_post(f"{THREADS_API}/{user_id}/threads_publish",
+                      {"creation_id": c["id"], "access_token": token})
+        if r.get("id"):
+            print(f"  リプライ的中報告完了! post id = {r['id']}")
+            return True
+        print(f"  リプライ公開失敗: {r}")
+    except Exception as ex:  # noqa: BLE001
+        print(f"  リプライ投稿エラー: {ex}")
+    return False
+
+
 def main():
     token = os.environ.get("THREADS_ACCESS_TOKEN", "").strip()
     if not token:
@@ -347,6 +387,25 @@ def main():
                             user_id = get_user_id(token)
                         if post_hit(e, payout, token, user_id, current_streak(log)):
                             e["hit_posted"] = True
+
+        # 予想投稿へのリプライで「買い目 ◯◯倍的中🎯 + 一言」を出す(締切90分以内の的中のみ)
+        if e.get("result") and e.get("hit") and not e.get("reply_posted"):
+            try:
+                closed_r = datetime.strptime(
+                    e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
+                ).replace(tzinfo=JST)
+                fresh_r = (now - closed_r) <= timedelta(minutes=90)
+            except (ValueError, KeyError):
+                fresh_r = False
+            if not fresh_r:
+                e["reply_posted"] = True
+                changed = True
+            else:
+                if user_id is None:
+                    user_id = get_user_id(tok)
+                if post_reply(e, tok, user_id):
+                    e["reply_posted"] = True
+                    changed = True
 
     if changed:
         with open(LOG_FILE, "w", encoding="utf-8") as f:
