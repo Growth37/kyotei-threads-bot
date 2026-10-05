@@ -193,6 +193,30 @@ def write_csv(log):
         w.writerows(rows)
 
 
+def post_reply(entry, token, user_id) -> bool:
+    """予想投稿へのリプライで『買い目 ◯◯倍的中🎯』を出す."""
+    combo = entry.get("result") or ""
+    payout = entry.get("payout")
+    if payout:
+        mult = int(payout) / 100
+        mult_s = f"{mult:.1f}".rstrip("0").rstrip(".")
+        text = f"{combo}　{mult_s}倍的中🎯"
+    else:
+        text = f"{combo}　的中🎯"
+    pid = entry.get("post_id")
+    if not pid:
+        return False
+    try:
+        rid = _publish(user_id, token,
+                       {"media_type": "TEXT", "text": text, "reply_to_id": pid})
+        if rid:
+            print(f"  リプライ的中報告完了! post id = {rid}")
+            return True
+    except Exception as ex:  # noqa: BLE001
+        print(f"  リプライ投稿エラー: {ex}")
+    return False
+
+
 def main():
     token = os.environ.get("THREADS_ACCESS_TOKEN_2", "").strip()
     if not token:
@@ -259,6 +283,24 @@ def main():
                 else:
                     print(f"  ⚠ 的中報告に失敗。次回の実行で再送します: "
                           f"{e['stadium']}{e['race_number']}R")
+        # 3) 予想投稿へのリプライで「買い目 ◯◯倍的中🎯」を出す(本体報告とは別管理)
+        if e.get("result") and e.get("hit") and not e.get("reply_posted"):
+            try:
+                closed_r = datetime.strptime(
+                    e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
+                ).replace(tzinfo=JST)
+                fresh_r = (now - closed_r) <= timedelta(minutes=90)
+            except (ValueError, KeyError):
+                fresh_r = False
+            if not fresh_r:
+                e["reply_posted"] = True
+                changed = True
+            else:
+                if user_id is None:
+                    user_id = tm.get_user_id(tok)
+                if post_reply(e, tok, user_id):
+                    e["reply_posted"] = True
+                    changed = True
 
     if changed:
         with open(LOG_FILE, "w", encoding="utf-8") as f:
