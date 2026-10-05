@@ -16153,6 +16153,15 @@
    "1-4-2",
    "1-4-5"
   ],
-  "views": {}
+  "views": {
+   "1h": 324
+  },
+  "views_at": {
+   "1h": 1.35
+  },
+  "result": "1-4-3",
+  "payout": 860,
+  "hit": true,
+  "hit_posted": true
  }
 ]
