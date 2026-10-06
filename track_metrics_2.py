@@ -280,27 +280,11 @@ def main():
                 if post_hit_new(e, e.get("payout"), token, user_id, log):
                     e["announced"] = True
                     changed = True
+                    if post_reply(e, token, user_id):
+                        e["reply_posted"] = True
                 else:
                     print(f"  ⚠ 的中報告に失敗。次回の実行で再送します: "
                           f"{e['stadium']}{e['race_number']}R")
-        # 3) 予想投稿へのリプライで「買い目 ◯◯倍的中🎯」を出す(本体報告とは別管理)
-        if e.get("result") and e.get("hit") and not e.get("reply_posted"):
-            try:
-                closed_r = datetime.strptime(
-                    e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
-                ).replace(tzinfo=JST)
-                fresh_r = (now - closed_r) <= timedelta(minutes=90)
-            except (ValueError, KeyError):
-                fresh_r = False
-            if not fresh_r:
-                e["reply_posted"] = True
-                changed = True
-            else:
-                if user_id is None:
-                    user_id = tm.get_user_id(tok)
-                if post_reply(e, tok, user_id):
-                    e["reply_posted"] = True
-                    changed = True
 
     if changed:
         with open(LOG_FILE, "w", encoding="utf-8") as f:
