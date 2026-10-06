@@ -16700,10 +16700,12 @@
    "1-5-3"
   ],
   "views": {
-   "1h": 286
+   "1h": 286,
+   "5h": 764
   },
   "views_at": {
-   "1h": 1.04
+   "1h": 1.04,
+   "5h": 5.04
   },
   "result": "1-5-2",
   "payout": 2330,
@@ -16818,7 +16820,12 @@
   },
   "views_at": {
    "1h": 1.13
-  }
+  },
+  "result": "1-2-5",
+  "payout": 1570,
+  "hit": true,
+  "hit_posted": true,
+  "reply_posted": true
  },
  {
   "post_id": "17959378089248839",
@@ -16866,6 +16873,16 @@
    "1-4-2",
    "1-4-6"
   ],
-  "views": {}
+  "views": {
+   "1h": 847
+  },
+  "views_at": {
+   "1h": 1.28
+  },
+  "result": "1-2-4",
+  "payout": 450,
+  "hit": true,
+  "hit_posted": true,
+  "reply_posted": true
  }
 ]
