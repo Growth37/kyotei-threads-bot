@@ -5618,7 +5618,11 @@
    "1-4-3",
    "1-4-6"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-2-6",
+  "payout": 750,
+  "hit": true,
+  "reply_posted": true
  },
  {
   "post_id": "17923196583438699",
