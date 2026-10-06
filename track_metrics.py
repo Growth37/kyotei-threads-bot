@@ -387,25 +387,8 @@ def main():
                             user_id = get_user_id(token)
                         if post_hit(e, payout, token, user_id, current_streak(log)):
                             e["hit_posted"] = True
-
-        # 予想投稿へのリプライで「買い目 ◯◯倍的中🎯 + 一言」を出す(締切90分以内の的中のみ)
-        if e.get("result") and e.get("hit") and not e.get("reply_posted"):
-            try:
-                closed_r = datetime.strptime(
-                    e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
-                ).replace(tzinfo=JST)
-                fresh_r = (now - closed_r) <= timedelta(minutes=90)
-            except (ValueError, KeyError):
-                fresh_r = False
-            if not fresh_r:
-                e["reply_posted"] = True
-                changed = True
-            else:
-                if user_id is None:
-                    user_id = get_user_id(tok)
-                if post_reply(e, tok, user_id):
-                    e["reply_posted"] = True
-                    changed = True
+                            if post_reply(e, token, user_id):
+                                e["reply_posted"] = True
 
     if changed:
         with open(LOG_FILE, "w", encoding="utf-8") as f:
