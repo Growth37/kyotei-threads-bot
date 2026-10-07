@@ -5839,7 +5839,11 @@
    "4-3-1",
    "4-3-2"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-4-3",
+  "payout": 1090,
+  "hit": true,
+  "reply_posted": true
  },
  {
   "post_id": "18081310079650838",
