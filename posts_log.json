@@ -17363,6 +17363,16 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {
+   "1h": 661
+  },
+  "views_at": {
+   "1h": 1.35
+  },
+  "result": "1-2-4",
+  "payout": 1200,
+  "hit": true,
+  "hit_posted": true,
+  "reply_posted": true
  }
 ]
