@@ -427,9 +427,10 @@ def build_post(race, blocks, mode) -> str:
     lines.append("")
     lines.append("本線")
     lines.append(blocks["honsen_disp"])
-    lines.append("")
-    lines.append("絞り")
-    lines.append(blocks["shibori_disp"])
+    if blocks.get("shibori_disp"):
+        lines.append("")
+        lines.append("絞り")
+        lines.append(blocks["shibori_disp"])
     if blocks.get("osae_lines"):
         lines.append("")
         lines.append("抑え")
@@ -481,13 +482,59 @@ def recently_posted(now, minutes: int = 45) -> bool:
         return False
 
 
+def _a1_osae(race, h, t, s, f4):
+    """的中重視の抑え: ①号艇がA1 かつ 他にもA1選手がいる場合だけ、
+    もう1人のA1艇を頭・◎(①)を2着にした薄い保険2点を返す。
+    条件を満たさなければ (None, None)。"""
+    if h != 1:
+        return None, None
+    boats = race.get("boats", [])
+
+    def _num(b):
+        return int(b.get("racer_boat_number") or 0)
+
+    def _is_a1(b):
+        return int(b.get("racer_class_number") or 4) == 1
+
+    boat1 = next((b for b in boats if _num(b) == 1), None)
+    if boat1 is None or not _is_a1(boat1):
+        return None, None
+    others = sorted(
+        (b for b in boats if _num(b) != 1 and _is_a1(b)),
+        key=score_boat, reverse=True,
+    )
+    if not others:
+        return None, None
+    a1b = _num(others[0])
+    thirds = [x for x in (t, s, f4) if x not in (1, a1b) and x != 0][:2]
+    if len(thirds) < 2:
+        return None, None
+    osae_lines = [f"{a1b}-1-{mm(*thirds)}"]
+    osae = _expand2(a1b, 1, thirds)
+    return osae_lines, osae
+
+
 def blocks_for(race, mode):
     lanes, _ = _lanes(race)
     h, t, s, f4, f5 = (lanes + [0, 0, 0, 0, 0])[:5]
     if mode == "中穴":
         return build_medium(h, t, s, f4, f5)
     tight = _clarity(race) >= 25
-    return build_solid(h, t, s, f4, f5, tight)
+    blocks = build_solid(h, t, s, f4, f5, tight)
+    osae_lines, osae = _a1_osae(race, h, t, s, f4)
+    if osae_lines:
+        # ①A1＋他A1: 本線を4点に絞り、絞りは省いて抑え2点を付ける
+        blocks["honsen_disp"] = f"{h}-{mm(t, s)}-{mm(t, s, f4)}"
+        blocks["honsen"] = _expand(h, [t, s], [t, s, f4])
+        blocks["shibori_disp"] = ""
+        blocks["shibori"] = []
+        blocks["osae_lines"] = osae_lines
+        blocks["osae"] = osae
+    else:
+        # 条件を満たさないレースは今まで通り(抑えなし)
+        blocks["osae_lines"] = []
+        blocks["osae"] = []
+    return blocks
 
 
 def main():
