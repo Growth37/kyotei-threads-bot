@@ -6149,7 +6149,10 @@
    "3-2-1",
    "3-2-5"
   ],
-  "announced": false
+  "announced": false,
+  "result": "2-5-4",
+  "payout": 16260,
+  "hit": false
  },
  {
   "post_id": "18106999039955895",
