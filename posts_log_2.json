@@ -6371,7 +6371,10 @@
    "1-6-3",
    "1-6-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-2-5",
+  "payout": 2450,
+  "hit": false
  },
  {
   "post_id": "18178640422432399",
