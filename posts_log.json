@@ -17308,6 +17308,11 @@
   },
   "views_at": {
    "1h": 1.05
-  }
+  },
+  "result": "1-2-4",
+  "payout": 780,
+  "hit": true,
+  "hit_posted": true,
+  "reply_posted": true
  }
 ]
