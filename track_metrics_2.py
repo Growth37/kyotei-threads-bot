@@ -427,7 +427,7 @@ def main():
                 closed_r = datetime.strptime(
                     e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
                 ).replace(tzinfo=JST)
-                fresh_r = (now - closed_r) <= timedelta(minutes=180)
+                fresh_r = (now - closed_r) <= timedelta(minutes=60)
             except (ValueError, KeyError):
                 fresh_r = False
             if not fresh_r:
