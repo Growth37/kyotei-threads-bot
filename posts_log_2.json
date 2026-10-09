@@ -6560,7 +6560,10 @@
    "5-1-2",
    "5-1-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "3-5-4",
+  "payout": 6970,
+  "hit": false
  },
  {
   "post_id": "18463630723142158",
