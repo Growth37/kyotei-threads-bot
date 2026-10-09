@@ -292,27 +292,165 @@ def write_csv(log: list):
         print(f"xlsx生成スキップ: {e}")
 
 
-def post_reply(entry, token, user_id) -> bool:
-    """予想投稿へのリプライで『買い目 ◯◯倍的中🎯』＋簡単な一言を出す."""
-    import random
-    combo = entry.get("result") or ""
-    payout = entry.get("payout")
-    if payout:
+# ===== リプライ(結果を見た関西弁コメント / @r_no_yosou) =================
+TECHNIQUE = {
+    1: "逃げ", 2: "差し", 3: "まくり", 4: "まくり差し", 5: "抜き", 6: "恵まれ",
+}
+
+
+def _find_result_race(entry):
+    """結果APIから該当レースのraw(選手名・ST・決まり手入り)を返す."""
+    try:
+        for race in fetch_results(entry.get("race_date") or ""):
+            if int(race.get("race_stadium_number") or 0) != int(entry["stadium_number"]):
+                continue
+            if int(race.get("race_number") or 0) != int(entry["race_number"]):
+                continue
+            return race
+    except Exception:  # noqa: BLE001
+        return None
+    return None
+
+
+def _mult_str(payout):
+    try:
         mult = int(payout) / 100
-        mult_s = f"{mult:.1f}".rstrip("0").rstrip(".")
-        head = f"{combo}　{mult_s}倍的中🎯"
-    else:
-        head = f"{combo}　的中🎯"
-    comments = [
-        "しっかり獲れた一本！", "自信の本命、的中や🎯", "読み通りの決着！",
-        "ナイス的中、おめでとう！", "この並び通りやったな！", "本線ズバリ！",
-        "気持ちよく的中！", "今日もしっかり的中や！",
+        return f"{mult:.1f}".rstrip("0").rstrip(".")
+    except (TypeError, ValueError):
+        return ""
+
+
+def _pred_head(entry):
+    for combo in (entry.get("honsen") or []) + (entry.get("combos") or []):
+        try:
+            return int(str(combo).split("-")[0])
+        except (ValueError, IndexError):
+            continue
+    return None
+
+
+def _race_facts(entry, race):
+    """LLMに渡すレース事実のテキストを組み立てる(@r_no_yosou用)."""
+    boats = race.get("boats") or []
+    by_place = {}
+    st_map = {}
+    name_map = {}
+    for b in boats:
+        n = int(b.get("racer_boat_number") or 0)
+        nm = (b.get("racer_name") or "").replace("　", " ").strip()
+        name_map[n] = nm
+        p = b.get("racer_place_number")
+        if p in (1, 2, 3):
+            by_place[int(p)] = n
+        st = b.get("racer_start_timing")
+        if st is not None:
+            st_map[n] = st
+
+    def label(n):
+        return (str(n) + "号艇" + name_map.get(n, "")).strip()
+
+    order = " → ".join(
+        label(by_place[p]) + "(" + str(p) + "着)" for p in (1, 2, 3) if p in by_place
+    )
+    head = _pred_head(entry)
+    head_place = None
+    if head:
+        head_place = next(
+            (int(b.get("racer_place_number"))
+             for b in boats
+             if int(b.get("racer_boat_number") or 0) == head and b.get("racer_place_number")),
+            None,
+        )
+    tech = TECHNIQUE.get(int(race.get("race_technique_number") or 0), "")
+    st_txt = "、".join(label(n) + " ST" + str(st_map[n]) for n in sorted(st_map))
+
+    combo = entry.get("result") or ""
+    mult = _mult_str(entry.get("payout"))
+    hit = bool(entry.get("hit"))
+    in_shibori = combo in (entry.get("shibori") or [])
+    mode = entry.get("mode") or ""
+
+    lines = [
+        "会場: " + str(entry.get("stadium")) + str(entry.get("race_number")) + "R",
+        "予想の狙い: " + (mode + "狙い。" if mode else "") + "本命(◎)は" + (str(head) + "号艇" if head else "不明") + "。買い目 " + str(len(entry.get("combos") or [])) + "点。",
+        "決着: " + combo + "(" + mult + "倍) " + ("的中" if hit else "不的中"),
+        "着順: " + order,
+        "本命◎(" + (str(head) if head else "?") + "号艇)の着順: " + (str(head_place) + "着" if head_place else "不明"),
     ]
-    rng = random.Random(str(entry.get("post_id")))
-    text = head + "\n" + rng.choice(comments)
+    if tech:
+        lines.append("決まり手: " + tech)
+    if st_txt:
+        lines.append("ST: " + st_txt)
+    if hit:
+        lines.append("※的中。" + ("絞りにも入っていた。" if in_shibori else "絞りには入っていない。"))
+    return "\n".join(lines)
+
+
+def _llm_comment(entry, race, hit):
+    """Gemini無料枠で関西弁コメントを生成(@r_no_yosou用)。失敗時はNone."""
+    key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if not key:
+        return None
+    facts = _race_facts(entry, race)
+    style = (
+        "あなたは競艇予想アカウント『@r_no_yosou』の中の人。関西の予想家で、"
+        "軽妙なぼやき・ツッコミ・自虐まじりの関西弁で話す。絵文字あり、2〜4行。"
+        "不的中は怒るより『あちゃー』『しゃあない』系の関西のぼやき・ツッコミで。"
+        "的中は『よっしゃ』『ドンピシャ』系で気持ちよく喜ぶ。艇番は①②③、選手名も出してよい。"
+        "結果の事実(誰が来たか/本命の着順/STや決まり手)を必ず踏まえる。"
+        "『ふざけとる』『なにしとんねん』『何してるの』等の強い罵倒口調は使わない。"
+        "買い目の行(○-○-○や倍率)は書かない。コメント本文だけ返す。"
+    )
+    examples = (
+        "例(不的中):\nあー①逃げ損ねたか…📉\nこら獲れんわ、しゃあない切り替えやで🙏\n\n"
+        "例(不的中):\nまさかの⑤マクリとはなぁ💦\nこんなん読めるかいな🤯 また次いこ！\n\n"
+        "例(的中):\nよっしゃ本命キッチリ‼️\n狙い通りやで、ええ感じやん😎\n\n"
+        "例(的中):\nドンピシャやん🎯\nこういうの獲れると気持ちええわ〜🍺"
+    )
+    prompt = style + "\n\n" + examples + "\n\n--- 今回のレース ---\n" + facts + "\n\nコメント本文のみ:"
+    body = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": 1.0, "maxOutputTokens": 250},
+    }).encode("utf-8")
+    url = ("https://generativelanguage.googleapis.com/v1beta/models/"
+           "gemini-2.0-flash:generateContent?key=" + key)
+    req = urllib.request.Request(
+        url, data=body,
+        headers={"Content-Type": "application/json"}, method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            data = json.loads(r.read().decode("utf-8"))
+        cand = (data.get("candidates") or [{}])[0]
+        parts = (cand.get("content") or {}).get("parts") or []
+        txt = "".join(p.get("text", "") for p in parts).strip()
+        return txt or None
+    except Exception as ex:  # noqa: BLE001
+        print("  コメント生成失敗: " + str(ex))
+        return None
+
+
+def _fallback_comment(hit):
+    return "よっしゃ本命キッチリ獲れたで😎" if hit else "あちゃー、こら獲れんわ…🙏 次いこ！"
+
+
+def post_reply(entry, token, user_id) -> bool:
+    """予想投稿へのリプライ。的中/不的中どちらも結果行＋関西弁コメントを返信."""
     pid = entry.get("post_id")
     if not pid:
         return False
+    combo = entry.get("result") or ""
+    mult = _mult_str(entry.get("payout"))
+    hit = bool(entry.get("hit"))
+    mark = "的中🎯" if hit else "❌"
+    header = (combo + "　" + mult + "倍" + mark) if mult else (combo + "　" + mark)
+
+    race = _find_result_race(entry)
+    comment = _llm_comment(entry, race, hit) if race else None
+    if not comment:
+        comment = _fallback_comment(hit)
+    text = (header + "\n" + comment)[:500]
+
     try:
         c = http_post(f"{THREADS_API}/{user_id}/threads",
                       {"media_type": "TEXT", "text": text,
@@ -321,10 +459,12 @@ def post_reply(entry, token, user_id) -> bool:
             print(f"  リプライコンテナ失敗: {c}")
             return False
         time.sleep(35)
-        r = http_post(f"{THREADS_API}/{user_id}/threads_publish",
-                      {"creation_id": c["id"], "access_token": token})
+        r = http_post(
+            f"{THREADS_API}/{user_id}/threads_publish",
+            {"creation_id": c["id"], "access_token": token},
+        )
         if r.get("id"):
-            print(f"  リプライ的中報告完了! post id = {r['id']}")
+            print(f"  リプライ完了! post id = {r['id']}")
             return True
         print(f"  リプライ公開失敗: {r}")
     except Exception as ex:  # noqa: BLE001
@@ -387,8 +527,26 @@ def main():
                             user_id = get_user_id(token)
                         if post_hit(e, payout, token, user_id, current_streak(log)):
                             e["hit_posted"] = True
-                            if post_reply(e, token, user_id):
-                                e["reply_posted"] = True
+
+        # 結果が出ていてまだリプライしていない投稿は、的中/不的中どちらも
+        # 予想投稿へ1回だけ関西弁コメント付きでリプライする。
+        if e.get("result") and not e.get("reply_posted"):
+            try:
+                closed_r = datetime.strptime(
+                    e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
+                ).replace(tzinfo=JST)
+                fresh_r = (now - closed_r) <= timedelta(minutes=180)
+            except (ValueError, KeyError):
+                fresh_r = False
+            if not fresh_r:
+                e["reply_posted"] = True
+                changed = True
+            else:
+                if user_id is None:
+                    user_id = get_user_id(token)
+                if post_reply(e, token, user_id):
+                    e["reply_posted"] = True
+                    changed = True
 
     if changed:
         with open(LOG_FILE, "w", encoding="utf-8") as f:
