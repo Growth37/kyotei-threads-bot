@@ -479,8 +479,20 @@ def build_post(race: dict) -> str:
     ner1 = "".join(str(x) for x in sorted([t, s]))
     ner3 = "".join(str(x) for x in sorted([t, s, f4]))
 
-    lines = [
+    import random
+    rng = random.Random(f"{race.get('race_stadium_number')}-{rno}-{closed}")
+    header = rng.choice([
         f"🚤 {stadium}{rno}R 予想いくで〜 (締切 {closed})",
+        f"🚤 {stadium}{rno}R いっとこか〜 (締切 {closed})",
+        f"🚤 {stadium}{rno}R ここは勝負や (締切 {closed})",
+        f"🚤 {stadium}{rno}R 本命ズバッといくで (締切 {closed})",
+        f"🚤 {stadium}{rno}R 狙いめ絞ったで (締切 {closed})",
+        f"🚤 {stadium}{rno}R 今レースの予想や〜 (締切 {closed})",
+        f"🚤 {stadium}{rno}R ここは獲りにいくで (締切 {closed})",
+        f"🚤 {stadium}{rno}R 勝負レースいくで〜 (締切 {closed})",
+    ])
+    lines = [
+        header,
         "",
         comment,
         "",
