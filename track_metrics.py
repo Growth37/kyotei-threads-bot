@@ -214,8 +214,19 @@ def post_hit(entry: dict, payout, token: str, user_id: str, streak: int = 1) -> 
     lines = []
     if streak >= 2:
         lines.append(f"🔥{streak}連勝中やで!!")
+    import random
+    _rng = random.Random(str(entry.get("post_id")) + "hithead")
     lines += [
-        "🎯的中や!!",
+        _rng.choice([
+            "🎯的中や!!",
+            "🎯キタ────!!",
+            "🎯ズバリ的中や!!",
+            "🎯獲ったで────!!",
+            "🎯どんぴしゃ的中!!",
+            "🎯やったで的中や!!",
+            "🎯ピタリ当てたで!!",
+            "🎯文句なしの的中や!!",
+        ]),
         f"{entry['stadium']}{entry['race_number']}R 3連単 {entry['result']}",
     ]
     if payout:
