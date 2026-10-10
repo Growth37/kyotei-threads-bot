@@ -419,7 +419,7 @@ def _llm_comment(entry, race, hit):
     facts = _race_facts(entry, race)
     style = (
         "あなたは競艇予想アカウント『@r_no_yosou』の中の人。関西の予想家で、"
-        "軽妙なぼやき・ツッコミ・自虐まじりの関西弁で話す。絵文字あり、2〜4行。"
+        "軽妙なぼやき・ツッコミ・自虐まじりの関西弁で話す。絵文字あり、必ず3〜4行で書く。毎回ちがう語り出し・言い回し・絵文字にして、同じ定型やテンプレは繰り返さない。"
         "不的中は怒るより『あちゃー』『しゃあない』系の関西のぼやき・ツッコミで。"
         "的中は『よっしゃ』『ドンピシャ』系で気持ちよく喜ぶ。艇番は①②③、選手名も出してよい。"
         "結果の事実(誰が来たか/本命の着順/STや決まり手)を必ず踏まえる。"
@@ -435,7 +435,7 @@ def _llm_comment(entry, race, hit):
     prompt = style + "\n\n" + examples + "\n\n--- 今回のレース ---\n" + facts + "\n\nコメント本文のみ:"
     body = json.dumps({
         "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 1.0, "maxOutputTokens": 250},
+        "generationConfig": {"temperature": 1.2, "topP": 0.95, "maxOutputTokens": 320},
     }).encode("utf-8")
     url = ("https://generativelanguage.googleapis.com/v1beta/models/"
            "gemini-2.0-flash:generateContent?key=" + key)
@@ -456,7 +456,9 @@ def _llm_comment(entry, race, hit):
 
 
 def _fallback_comment(hit):
-    return "よっしゃ本命キッチリ獲れたで😎" if hit else "あちゃー、こら獲れんわ…🙏 次いこ！"
+    if hit:
+        return "よっしゃ本命キッチリ獲れたで😎\n狙い通りや、ええ流れやん🎯\nこの調子でいくで〜！"
+    return "あちゃー、こら獲れんわ…🙏\nまあこういう日もあるわな💦\n気持ち切り替えて次いこ！"
 
 
 def post_reply(entry, token, user_id) -> bool:
