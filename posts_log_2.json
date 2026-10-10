@@ -6891,7 +6891,11 @@
    "1-4-3",
    "1-4-5"
   ],
-  "announced": false
+  "announced": true,
+  "result": "1-4-2",
+  "payout": 620,
+  "hit": true,
+  "reply_posted": true
  },
  {
   "post_id": "18099105623417113",
