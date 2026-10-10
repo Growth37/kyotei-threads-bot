@@ -397,32 +397,7 @@ def main():
             mark = "🎯的中!" if e["hit"] else "不的中"
             print(f"{e['stadium']}{e['race_number']}R 結果 {combo} → {mark}")
 
-        # 2) 的中していてまだ的中報告を出していない投稿は必ず投稿する。
-        #    結果が既に出ていても、前回投稿に失敗した分をここで再送する
-        #    (これが無いと『的中してるのに報告が無い』取りこぼしが起きる)。
-        if e.get("result") and e.get("hit") and not e.get("announced"):
-            # 締切から1.5時間以内の的中だけ報告する(古い的中は投稿しない)
-            try:
-                closed_h = datetime.strptime(
-                    e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
-                ).replace(tzinfo=JST)
-                fresh = (now - closed_h) <= timedelta(minutes=90)
-            except (ValueError, KeyError):
-                fresh = False
-            if not fresh:
-                e["announced"] = True  # 古すぎるので投稿せずスキップ
-                changed = True
-                print(f"  古い的中のため報告スキップ: "
-                      f"{e['stadium']}{e['race_number']}R")
-            elif True:
-                if user_id is None:
-                    user_id = tm.get_user_id(token)
-                if post_hit_new(e, e.get("payout"), token, user_id, log):
-                    e["announced"] = True
-                    changed = True
-                else:
-                    print(f"  ⚠ 的中報告に失敗。次回の実行で再送します: "
-                          f"{e['stadium']}{e['race_number']}R")
+        # 2) 的中報告の新規投稿は無効化(@shantianzhi37 はリプライのみ運用)。
 
         # 3) 結果が出ていてまだリプライしていない投稿は、的中/不的中どちらも
         #    予想投稿へ1回だけリプライする(結果を見た人間味コメント付き)。
