@@ -21,7 +21,8 @@
   },
   "result": "1-2-3",
   "payout": 710,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18003303833955876",
@@ -51,7 +52,8 @@
   },
   "result": "3-6-5",
   "payout": 1900,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18400127902093065",
@@ -81,7 +83,8 @@
   },
   "result": "4-1-5",
   "payout": 2210,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18103128992131782",
@@ -102,7 +105,8 @@
   "views": {},
   "result": "4-5-2",
   "payout": 9440,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18102227120593554",
@@ -164,7 +168,8 @@
   },
   "result": "3-1-2",
   "payout": 17440,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18004818713764413",
@@ -190,7 +195,8 @@
   },
   "result": "3-1-2",
   "payout": 2420,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18085209332639251",
@@ -211,7 +217,8 @@
   "views": {},
   "result": "3-5-1",
   "payout": 23240,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18136751566605676",
@@ -301,7 +308,8 @@
   },
   "result": "4-6-1",
   "payout": 8540,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18109879892076512",
@@ -363,7 +371,8 @@
   },
   "result": "4-1-3",
   "payout": 6560,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18105804574866388",
@@ -425,7 +434,8 @@
   },
   "result": "1-3-4",
   "payout": 990,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17947367631216838",
@@ -469,7 +479,8 @@
   },
   "result": "2-4-6",
   "payout": 18100,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18108877538053450",
@@ -559,7 +570,8 @@
   },
   "result": "3-4-1",
   "payout": 15400,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17898383841540030",
@@ -695,7 +707,8 @@
   },
   "result": "1-5-2",
   "payout": 720,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18083212406270074",
@@ -739,7 +752,8 @@
   },
   "result": "1-3-5",
   "payout": 1750,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18216656326338588",
@@ -783,7 +797,8 @@
   },
   "result": "4-1-6",
   "payout": 2840,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18602155171046290",
@@ -827,7 +842,8 @@
   },
   "result": "1-4-3",
   "payout": 1100,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18002059091969887",
@@ -963,7 +979,8 @@
   },
   "result": "1-3-5",
   "payout": 2750,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17873422317545313",
@@ -1053,7 +1070,8 @@
   },
   "result": "1-3-5",
   "payout": 990,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18141692812560461",
@@ -1097,7 +1115,8 @@
   },
   "result": "1-3-5",
   "payout": 1640,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18100756445241739",
@@ -1141,7 +1160,8 @@
   },
   "result": "1-4-6",
   "payout": 1370,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18099049699976370",
@@ -1231,7 +1251,8 @@
   },
   "result": "1-3-4",
   "payout": 950,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17951600313236539",
@@ -1621,7 +1642,8 @@
   },
   "result": "1-4-6",
   "payout": 3230,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17911949361431611",
@@ -1843,7 +1865,8 @@
   },
   "result": "1-3-5",
   "payout": 1230,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17893689228389579",
@@ -2007,7 +2030,8 @@
   },
   "result": "1-5-4",
   "payout": 1620,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18612031480005681",
@@ -2173,7 +2197,8 @@
   },
   "result": "4-1-5",
   "payout": 5110,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18138747649572686",
@@ -2563,7 +2588,8 @@
   },
   "result": "1-4-6",
   "payout": 3040,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18101762216351152",
@@ -2841,7 +2867,8 @@
   },
   "result": "1-4-6",
   "payout": 2100,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18124630297666922",
@@ -3455,7 +3482,8 @@
   },
   "result": "1-2-5",
   "payout": 1730,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18085125416281322",
@@ -3509,7 +3537,8 @@
   },
   "result": "4-6-2",
   "payout": 11300,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18098719307221080",
@@ -3675,7 +3704,8 @@
   },
   "result": "1-3-6",
   "payout": 1730,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18133520287538717",
@@ -3729,7 +3759,8 @@
   },
   "result": "4-1-6",
   "payout": 2630,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18107546351032629",
@@ -3783,7 +3814,8 @@
   },
   "result": "1-4-5",
   "payout": 4700,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17930064552380612",
@@ -3837,7 +3869,8 @@
   },
   "result": "1-2-5",
   "payout": 2500,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18423949978181988",
@@ -3891,7 +3924,8 @@
   },
   "result": "1-3-4",
   "payout": 13160,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18104761457591898",
@@ -4169,7 +4203,8 @@
   },
   "result": "1-2-5",
   "payout": 1570,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18128446192674139",
@@ -4335,7 +4370,8 @@
   },
   "result": "1-4-3",
   "payout": 1400,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18068125277485869",
@@ -4445,7 +4481,8 @@
   },
   "result": "1-5-6",
   "payout": 11580,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18583497769064320",
@@ -4611,7 +4648,8 @@
   },
   "result": "2-1-4",
   "payout": 4390,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17943215787272338",
@@ -4721,7 +4759,8 @@
   },
   "result": "1-2-4",
   "payout": 1670,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18144403666546361",
@@ -4775,7 +4814,8 @@
   },
   "result": "3-6-4",
   "payout": 69730,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17943049644270384",
@@ -4885,7 +4925,8 @@
   },
   "result": "1-3-6",
   "payout": 2600,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18431429752177870",
@@ -4995,7 +5036,8 @@
   },
   "result": "4-2-6",
   "payout": 64300,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17950464771211418",
@@ -5105,7 +5147,8 @@
   },
   "result": "1-5-3",
   "payout": 1370,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18111833473921265",
@@ -5327,7 +5370,8 @@
   },
   "result": "2-1-5",
   "payout": 20460,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18278321197292096",
@@ -5437,7 +5481,8 @@
   },
   "result": "1-3-6",
   "payout": 5300,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18109002674467917",
@@ -5547,7 +5592,8 @@
   },
   "result": "1-5-3",
   "payout": 2360,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18633019231029407",
@@ -5993,7 +6039,8 @@
   },
   "result": "1-5-2",
   "payout": 3370,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18100311734362724",
@@ -6215,7 +6262,8 @@
   },
   "result": "1-2-4",
   "payout": 1240,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18174484912429477",
@@ -6269,7 +6317,8 @@
   },
   "result": "1-4-6",
   "payout": 8360,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18134730574547657",
@@ -6323,7 +6372,8 @@
   },
   "result": "1-3-5",
   "payout": 2210,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18106905392144971",
@@ -6601,7 +6651,8 @@
   },
   "result": "3-4-1",
   "payout": 5050,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18089704514248212",
@@ -6655,7 +6706,8 @@
   },
   "result": "3-1-5",
   "payout": 3830,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17985494175023585",
@@ -6821,7 +6873,8 @@
   },
   "result": "1-6-2",
   "payout": 3410,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18151059502516406",
@@ -6931,7 +6984,8 @@
   },
   "result": "6-4-2",
   "payout": 7590,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17952992457216945",
@@ -7041,7 +7095,8 @@
   },
   "result": "5-1-2",
   "payout": 28330,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17865691929672927",
@@ -7263,7 +7318,8 @@
   },
   "result": "4-6-3",
   "payout": 41510,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18059799638526111",
@@ -7373,7 +7429,8 @@
   },
   "result": "1-2-3",
   "payout": 1130,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18092028125299599",
@@ -7427,7 +7484,8 @@
   },
   "result": "2-4-1",
   "payout": 5650,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18368018014214919",
@@ -7543,7 +7601,8 @@
   },
   "result": "1-4-6",
   "payout": 2880,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17945302326276660",
@@ -7727,7 +7786,8 @@
   },
   "result": "1-3-6",
   "payout": 2120,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17905612098488302",
@@ -8035,7 +8095,8 @@
   },
   "result": "1-4-2",
   "payout": 1140,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18136053850722432",
@@ -8095,7 +8156,8 @@
   },
   "result": "1-3-6",
   "payout": 5980,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18034776212842188",
@@ -8217,7 +8279,8 @@
   },
   "result": "1-3-5",
   "payout": 1540,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17984777886054725",
@@ -8339,7 +8402,8 @@
   },
   "result": "4-3-6",
   "payout": 18490,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18324883327274758",
@@ -8461,7 +8525,8 @@
   },
   "result": "5-2-6",
   "payout": 28320,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18114935959779839",
@@ -8521,7 +8586,8 @@
   },
   "result": "5-4-3",
   "payout": 25150,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18107465504129296",
@@ -8581,7 +8647,8 @@
   },
   "result": "1-3-4",
   "payout": 690,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18105225689268632",
@@ -8641,7 +8708,8 @@
   },
   "result": "1-5-3",
   "payout": 2440,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18080387639697612",
@@ -8701,7 +8769,8 @@
   },
   "result": "5-4-1",
   "payout": 9620,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18124138891863896",
@@ -8947,7 +9016,8 @@
   },
   "result": "6-5-4",
   "payout": 4590,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18155515216502802",
@@ -9689,7 +9759,8 @@
   },
   "result": "1-2-6",
   "payout": 6650,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17984552234882229",
@@ -9749,7 +9820,8 @@
   },
   "result": "1-3-4",
   "payout": 2590,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18126853490483556",
@@ -9809,7 +9881,8 @@
   },
   "result": "4-2-3",
   "payout": 38630,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18096616919420090",
@@ -10117,7 +10190,8 @@
   },
   "result": "1-6-4",
   "payout": 9700,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17894447781672172",
@@ -10301,7 +10375,8 @@
   },
   "result": "5-4-1",
   "payout": 14500,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18090900443440086",
@@ -10423,7 +10498,8 @@
   },
   "result": "2-5-4",
   "payout": 56880,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18380117221238175",
@@ -10607,7 +10683,8 @@
   },
   "result": "5-1-4",
   "payout": 7830,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18088074278220142",
@@ -10667,7 +10744,8 @@
   },
   "result": "3-1-5",
   "payout": 3530,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18114609013795875",
@@ -10975,7 +11053,8 @@
   },
   "result": "4-1-6",
   "payout": 12540,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17908695741494152",
@@ -11035,7 +11114,8 @@
   },
   "result": "1-6-2",
   "payout": 29590,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17902949937581634",
@@ -11095,7 +11175,8 @@
   },
   "result": "2-4-3",
   "payout": 22430,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17911087896468252",
@@ -11217,7 +11298,8 @@
   },
   "result": "3-4-5",
   "payout": 52040,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17970899337155364",
@@ -11277,7 +11359,8 @@
   },
   "result": "1-3-2",
   "payout": 3600,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17992768131043825",
@@ -11337,7 +11420,8 @@
   },
   "result": "6-1-3",
   "payout": 38100,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18173948020448730",
@@ -11459,7 +11543,8 @@
   },
   "result": "3-1-6",
   "payout": 2820,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18577050436069604",
@@ -11519,7 +11604,8 @@
   },
   "result": "1-3-4",
   "payout": 800,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18098075006562242",
@@ -11579,7 +11665,8 @@
   },
   "result": "5-2-1",
   "payout": 109470,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18107830871240228",
@@ -11701,7 +11788,8 @@
   },
   "result": "6-4-2",
   "payout": 45600,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18149478943570755",
@@ -11823,7 +11911,8 @@
   },
   "result": "1-4-2",
   "payout": 2720,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18022702880875005",
@@ -12007,7 +12096,8 @@
   },
   "result": "1-5-6",
   "payout": 5100,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18071988533746119",
@@ -12315,7 +12405,8 @@
   },
   "result": "1-5-4",
   "payout": 1400,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18142603561581981",
@@ -12437,7 +12528,8 @@
   },
   "result": "2-5-3",
   "payout": 45840,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18340793272286578",
@@ -12497,7 +12589,8 @@
   },
   "result": "1-4-3",
   "payout": 3770,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17907882813487993",
@@ -12681,7 +12774,8 @@
   },
   "result": "5-4-1",
   "payout": 4980,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18216741175358292",
@@ -12741,7 +12835,8 @@
   },
   "result": "4-1-2",
   "payout": 8290,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17966939654966130",
@@ -12801,7 +12896,8 @@
   },
   "result": "5-1-4",
   "payout": 16900,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18096587117428337",
@@ -13109,7 +13205,8 @@
   },
   "result": "4-1-5",
   "payout": 9390,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17947617039294280",
@@ -13169,7 +13266,8 @@
   },
   "result": "2-3-4",
   "payout": 27180,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18219491767349738",
@@ -13291,7 +13389,8 @@
    "1h": 1.35,
    "5h": 5.35,
    "24h": 24.35
-  }
+  },
+  "reply_posted": true
  },
  {
   "post_id": "18097861367073686",
@@ -13351,7 +13450,8 @@
   },
   "result": "1-2-5",
   "payout": 730,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17968587639179280",
@@ -13411,7 +13511,8 @@
   },
   "result": "3-5-4",
   "payout": 12610,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18115642508006773",
@@ -13967,7 +14068,8 @@
   },
   "result": "3-5-1",
   "payout": 12190,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18191318983398901",
@@ -14027,7 +14129,8 @@
   },
   "result": "1-4-5",
   "payout": 1540,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18121883939106525",
@@ -14211,7 +14314,8 @@
   },
   "result": "1-6-4",
   "payout": 5860,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18132462445665135",
@@ -14829,7 +14933,8 @@
   },
   "result": "2-3-4",
   "payout": 2150,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18071112113754230",
@@ -14951,7 +15056,8 @@
   },
   "result": "1-3-4",
   "payout": 1190,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18565976923074795",
@@ -15011,7 +15117,8 @@
   },
   "result": "1-3-5",
   "payout": 2850,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18112002359605008",
@@ -15133,7 +15240,8 @@
   },
   "result": "2-3-4",
   "payout": 5840,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17910651627501880",
@@ -15317,7 +15425,8 @@
   },
   "result": "1-3-6",
   "payout": 4750,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18134907493657575",
@@ -15499,7 +15608,8 @@
   },
   "result": "1-4-5",
   "payout": 760,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18120156785004490",
@@ -15559,7 +15669,8 @@
   },
   "result": "5-3-6",
   "payout": 25500,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18148164601495840",
@@ -15619,7 +15730,8 @@
   },
   "result": "1-5-2",
   "payout": 2090,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18100614308343809",
@@ -15865,7 +15977,8 @@
   },
   "result": "1-2-3",
   "payout": 720,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18477377956114211",
@@ -15925,7 +16038,8 @@
   },
   "result": "4-2-1",
   "payout": 16200,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18121202911783997",
@@ -16047,7 +16161,8 @@
   },
   "result": "1-4-6",
   "payout": 6580,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18337378051275450",
@@ -16107,7 +16222,8 @@
    "1h": 1.32,
    "5h": 5.32,
    "24h": 24.32
-  }
+  },
+  "reply_posted": true
  },
  {
   "post_id": "18132108913624232",
@@ -16167,7 +16283,8 @@
   },
   "result": "5-2-6",
   "payout": 249300,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18098527517546441",
@@ -16289,7 +16406,8 @@
   },
   "result": "4-5-1",
   "payout": 27870,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18175567960451332",
@@ -16473,7 +16591,8 @@
   },
   "result": "4-2-1",
   "payout": 4000,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18113050340163214",
@@ -16533,7 +16652,8 @@
   },
   "result": "1-3-2",
   "payout": 3790,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18101618750528711",
@@ -16655,7 +16775,8 @@
   },
   "result": "1-4-2",
   "payout": 3980,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18497044828101306",
@@ -16777,7 +16898,8 @@
   },
   "result": "1-5-6",
   "payout": 2030,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18076714565434530",
@@ -16961,7 +17083,8 @@
   },
   "result": "3-2-4",
   "payout": 22650,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18099422357287685",
@@ -17021,7 +17144,8 @@
   },
   "result": "1-2-6",
   "payout": 1340,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18123086323902081",
@@ -17143,7 +17267,8 @@
   },
   "result": "3-1-6",
   "payout": 3170,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18110521796177466",
@@ -17265,7 +17390,8 @@
   },
   "result": "1-6-3",
   "payout": 2250,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18144025177507204",
@@ -17449,7 +17575,8 @@
   },
   "result": "4-5-2",
   "payout": 40630,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17912587716286347",
@@ -17509,7 +17636,8 @@
   },
   "result": "6-1-2",
   "payout": 24750,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18104657000629376",
@@ -17621,11 +17749,13 @@
   ],
   "views": {
    "1h": 504,
-   "5h": 1129
+   "5h": 1129,
+   "24h": 1313
   },
   "views_at": {
    "1h": 1.05,
-   "5h": 5.05
+   "5h": 5.05,
+   "24h": 24.55
   },
   "result": "2-1-4",
   "payout": 2710,
@@ -17689,7 +17819,8 @@
   },
   "result": "3-1-4",
   "payout": 3800,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18192120415398436",
@@ -17747,7 +17878,8 @@
   },
   "result": "1-6-4",
   "payout": 6930,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17971956822153196",
@@ -17925,7 +18057,8 @@
   },
   "result": "1-3-6",
   "payout": 1680,
-  "hit": false
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18113026610589469",
