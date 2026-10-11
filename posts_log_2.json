@@ -7308,6 +7308,10 @@
    "3-1-2",
    "3-1-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "2-6-1",
+  "payout": 47130,
+  "hit": false,
+  "reply_posted": true
  }
 ]
