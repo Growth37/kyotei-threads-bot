@@ -7158,6 +7158,10 @@
    "1-5-3",
    "1-5-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-6-5",
+  "payout": 15670,
+  "hit": false,
+  "reply_posted": true
  }
 ]
