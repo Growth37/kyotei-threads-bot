@@ -18483,7 +18483,12 @@
   },
   "views_at": {
    "1h": 1.35
-  }
+  },
+  "result": "1-4-6",
+  "payout": 1830,
+  "hit": true,
+  "hit_posted": true,
+  "reply_posted": true
  },
  {
   "post_id": "18031295609909902",
