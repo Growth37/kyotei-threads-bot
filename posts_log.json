@@ -18964,6 +18964,15 @@
    "1-5-2",
    "1-5-4"
   ],
-  "views": {}
+  "views": {
+   "1h": 345
+  },
+  "views_at": {
+   "1h": 1.32
+  },
+  "result": "1-6-3",
+  "payout": 18230,
+  "hit": false,
+  "reply_posted": true
  }
 ]
