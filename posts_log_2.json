@@ -7485,7 +7485,11 @@
    "1-5-3",
    "1-5-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-5-3",
+  "payout": 1050,
+  "hit": true,
+  "reply_posted": true
  },
  {
   "post_id": "18098921510093948",
