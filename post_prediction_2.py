@@ -413,29 +413,91 @@ def build_reason(race, mode) -> str:
 
 
 def build_post(race, blocks, mode) -> str:
+    import random
     stadium = STADIUMS.get(int(race["race_stadium_number"]), "不明")
     rno = int(race["race_number"])
     closed = race["race_closed_at"][11:16]
+    boats = sorted(race["boats"], key=score_boat, reverse=True)
 
-    lines = [f"{stadium}{rno}R  {closed}〆"]
+    def ln(b):
+        return int(b.get("racer_boat_number") or 0)
+
+    def rn(b):
+        return str(b.get("racer_name") or "").replace("　", "")
+
+    circ = "①②③④⑤⑥"
+
+    def cz(n):
+        return circ[n - 1] if 1 <= n <= 6 else (str(n) + "号艇")
+
+    h = boats[0]
+    o = boats[1] if len(boats) > 1 else h
+    a = boats[2] if len(boats) > 2 else h
+    f4b = boats[3] if len(boats) > 3 else h
+    hn, on, an, f4 = ln(h), ln(o), ln(a), ln(f4b)
+    rng = random.Random(str(race.get("race_stadium_number")) + "-" + str(rno) + "-" + closed)
+
     if mode == "中穴":
-        lines.append("中穴狙い")
-    reason = build_reason(race, mode)
-    race["_reason"] = reason  # append_log で記録し、次回以降の連続重複を避ける
-    if reason:
-        lines.append(reason)
-    lines.append("")
+        reads = [
+            "ここは中穴狙い。" + cz(on) + rn(o) + "の一発に期待します。",
+            "荒れ含みとみて中穴勝負。軸は" + cz(on) + rn(o) + "です。",
+            "中穴ねらいで。" + cz(on) + rn(o) + "の頭まで見ています。",
+            "波乱に備えて中穴。主役は" + cz(on) + rn(o) + "。",
+            "一発あるとみて中穴勝負、" + cz(on) + rn(o) + "から狙います。",
+        ]
+        aite = [
+            "相手は本命" + cz(hn) + "と" + cz(an) + "を中心に組みます。",
+            "2・3着は" + cz(hn) + cz(an) + "を軸に手広く。",
+            "ヒモは" + cz(hn) + "と" + cz(an) + "、展開カバーで広めに。",
+            "連下は" + cz(hn) + cz(an) + "中心、押さえも添えて。",
+        ]
+        l1 = rng.choice(reads)
+        l2 = rng.choice(aite)
+    else:
+        honmei = [
+            "インから危なげなく逃げ切れると見ています。",
+            "スタートが決まればそのまま押し切る展開とみます。",
+            "枠なり進入なら、イン逃げが濃厚です。",
+            "まず頭は堅い、信頼度の高い一戦です。",
+            "展開も向きそうで、素直に軸でいきます。",
+            "最内から主導権を握れる見立てです。",
+            "大きな不安は見当たらず、頭から狙います。",
+            "ここは堅いとみて、イン信頼でいきます。",
+            "逃げ切りの再現性が高い一戦とみます。",
+            "差し・まくりの気配は薄く、イン本線で。",
+        ]
+        aite = [
+            "相手は" + cz(on) + cz(an) + "を中心に、押さえで" + cz(f4) + "まで。",
+            "ヒモは" + cz(on) + cz(an) + "が本線、薄く" + cz(f4) + "も。",
+            "2着候補は" + cz(on) + cz(an) + "、手広く" + cz(f4) + "まで。",
+            "相手筆頭は" + cz(on) + "、続いて" + cz(an) + cz(f4) + "。",
+            "2着は" + cz(on) + cz(an) + "を厚めに、" + cz(f4) + "は保険で。",
+            "ヒモ本線は" + cz(on) + cz(an) + "、押さえで" + cz(f4) + "。",
+            "相手は" + cz(on) + cz(an) + "、展開次第で" + cz(f4) + "も。",
+        ]
+        l1 = "本命は" + cz(hn) + rn(h) + "。" + rng.choice(honmei)
+        l2 = rng.choice(aite)
+
+    lines = [stadium + str(rno) + "R " + closed + "〆", "", l1, l2, ""]
     lines.append("本線")
     lines.append(blocks["honsen_disp"])
     if blocks.get("shibori_disp"):
-        lines.append("")
         lines.append("絞り")
         lines.append(blocks["shibori_disp"])
     if blocks.get("osae_lines"):
-        lines.append("")
         lines.append("抑え")
-        for o in blocks["osae_lines"]:
-            lines.append(o)
+        for ol in blocks["osae_lines"]:
+            lines.append(ol)
+    lines.append("")
+
+    close1 = ["的中重視でいきます🎯", "今日も的中重視で勝負🎯", "狙うは的中、堅実にいきます🎯", "的中第一でいきます🎯", "手堅く的中を取りにいきます🎯", "今日も的中狙いで一本🎯", "まずは的中、そこを最優先で🎯"]
+    close2 = ["自信のある一戦です。", "ここは勝負どころとみています。", "しっかり獲りにいきます。", "期待度は高めです。", "納得の買い目が組めました。", "手応えのある一戦です。", "狙いははっきりしています。"]
+    close3 = ["舟券は自己責任で🙏", "参考になれば嬉しいです🙏", "一緒に獲りましょう🔥", "応援よろしくお願いします🙏", "良い結果を期待して🔥", "無理のない範囲で楽しみましょう🙏"]
+    lines.append(rng.choice(close1))
+    lines.append(rng.choice(close2))
+    lines.append(rng.choice(close3))
+
+    race["_reason"] = l1 + " " + l2
     return "\n".join(lines)[:500]
 
 
