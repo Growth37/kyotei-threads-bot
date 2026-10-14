@@ -599,11 +599,7 @@ def main():
                     changed = True
                     mark = "🎯的中!" if e["hit"] else "不的中"
                     print(f"{e['stadium']}{e['race_number']}R 結果 {combo} → {mark}")
-                    if e["hit"] and not e.get("hit_posted"):
-                        if user_id is None:
-                            user_id = get_user_id(token)
-                        if post_hit(e, payout, token, user_id, current_streak(log)):
-                            e["hit_posted"] = True
+                    # 的中報告の新規投稿は無効化(@r_no_yosou はリプライのみ運用)。
 
         # 結果が出ていてまだリプライしていない投稿は、的中/不的中どちらも
         # 予想投稿へ1回だけ関西弁コメント付きでリプライする。
