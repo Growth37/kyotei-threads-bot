@@ -19650,7 +19650,11 @@
   },
   "views_at": {
    "1h": 1.04
-  }
+  },
+  "result": "1-3-4",
+  "payout": 550,
+  "hit": true,
+  "reply_posted": true
  },
  {
   "post_id": "17996320869045389",
