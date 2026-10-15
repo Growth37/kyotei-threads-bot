@@ -189,12 +189,20 @@ def _strong_challenger(race) -> bool:
     return False
 
 
+def _boat1_is_a(race) -> bool:
+    """①号艇がA級(A1/A2)かどうか."""
+    for b in race.get("boats", []) or []:
+        if int(b.get("racer_boat_number") or 0) == 1:
+            return int(b.get("racer_class_number") or 4) in (1, 2)
+    return False
+
+
 def medium_eligible(race) -> bool:
     """中穴狙いの対象レース条件:
       ・一般戦のみ(SG/G1/G2/G3は除外)
       ・2・3・4号艇に上手い(A1)or得意な選手がいる
     """
-    return _is_general(race) and _strong_challenger(race)
+    return _is_general(race) and _strong_challenger(race) and not _boat1_is_a(race)
 
 
 def _race_key(race):
