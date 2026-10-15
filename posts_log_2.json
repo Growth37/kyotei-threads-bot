@@ -8296,7 +8296,11 @@
    "3-1-2",
    "3-1-6"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-2-3",
+  "payout": 860,
+  "hit": true,
+  "reply_posted": true
  },
  {
   "post_id": "18246892657314074",
