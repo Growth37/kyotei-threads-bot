@@ -8401,6 +8401,10 @@
    "3-1-4",
    "3-1-6"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-4-5",
+  "payout": 6900,
+  "hit": false,
+  "reply_posted": true
  }
 ]
