@@ -2,21 +2,21 @@ name: 競艇予想をThreadsに投稿(2号 @shantianzhi37)
 
 on:
   schedule:
-    # UTC表記 (JST-9時間)。毎日 10:14 / 12:53 / 16:29 / 18:47 JST。
-    # 各回に+25分のバックアップ実行あり(取りこぼし対策。本体が実行済みなら
-    # スクリプト側の二重投稿ガードでスキップされる)。
+    # UTC表記 (JST-9時間)。毎日 10:14 / 11:41 / 13:26 / 15:12 / 16:52 / 18:41 JST
+    # (1号と時間が被らないよう不規則間隔に調整)
+    # 各回に+25分のバックアップ実行あり(取りこぼし対策。二重投稿ガードでスキップ)
     - cron: '14 1 * * *'    # 10:14 JST
     - cron: '39 1 * * *'    # 10:39 JST (backup)
-    - cron: '36 2 * * *'    # 11:36 JST (堅い固定)
-    - cron: '1 3 * * *'     # 12:01 JST (backup)
-    - cron: '53 3 * * *'    # 12:53 JST
-    - cron: '18 4 * * *'    # 13:18 JST (backup)
-    - cron: '5 6 * * *'     # 15:05 JST (堅い固定)
-    - cron: '30 6 * * *'    # 15:30 JST (backup)
-    - cron: '29 7 * * *'    # 16:29 JST
-    - cron: '54 7 * * *'    # 16:54 JST (backup)
-    - cron: '47 9 * * *'    # 18:47 JST
-    - cron: '12 10 * * *'   # 19:12 JST (backup)
+    - cron: '41 2 * * *'    # 11:41 JST (堅い固定)
+    - cron: '6 3 * * *'     # 12:06 JST (backup)
+    - cron: '26 4 * * *'    # 13:26 JST
+    - cron: '51 4 * * *'    # 13:51 JST (backup)
+    - cron: '12 6 * * *'    # 15:12 JST (堅い固定)
+    - cron: '37 6 * * *'    # 15:37 JST (backup)
+    - cron: '52 7 * * *'    # 16:52 JST
+    - cron: '17 8 * * *'    # 17:17 JST (backup)
+    - cron: '41 9 * * *'    # 18:41 JST
+    - cron: '6 10 * * *'    # 19:06 JST (backup)
   workflow_dispatch:
     inputs:
       dry_run:
@@ -40,6 +40,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: ランダム待機 (投稿時刻を毎回ずらして機械的パターンを避ける)
+        if: github.event_name == 'schedule'
+        run: |
+          DELAY=$((RANDOM % 600))
+          echo "${DELAY}秒待機します"
+          sleep $DELAY
       - name: 予想を生成してThreadsに投稿
         env:
           THREADS_ACCESS_TOKEN_2: ${{ secrets.THREADS_ACCESS_TOKEN_2 }}
