@@ -1,0 +1,56 @@
+name: 雑談/画像ポスト (@shantianzhi37)
+
+on:
+  schedule:
+    # UTC表記 (JST-9時間)。候補時刻を複数置き、スクリプト側で1日1本・確率で間引いて不規則化。
+    # (1号の雑談と時間が被らないようずらしてある)
+    - cron: '17 2 * * *'   # 11:17 JST
+    - cron: '7 5 * * *'    # 14:07 JST
+    - cron: '11 8 * * *'   # 17:11 JST
+    - cron: '3 11 * * *'   # 20:03 JST
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'お試し実行 (1=投稿せず内容表示のみ)'
+        required: false
+        default: '0'
+
+concurrency:
+  group: chat-shantianzhi37
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  chat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: ランダム待機 (投稿時刻を毎回ずらして機械的パターンを避ける)
+        if: github.event_name == 'schedule'
+        run: |
+          DELAY=$((RANDOM % 600))
+          echo "${DELAY}秒待機します"
+          sleep $DELAY
+      - name: 雑談/画像を投稿
+        env:
+          THREADS_ACCESS_TOKEN_2: ${{ secrets.THREADS_ACCESS_TOKEN_2 }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
+        run: python post_chat_2.py
+      - name: 投稿ログをコミット
+        run: |
+          git config user.name "kyotei-bot"
+          git config user.email "kyotei-bot@users.noreply.github.com"
+          [ -f chat_log_2.json ] && git add chat_log_2.json; true
+          if git diff --cached --quiet; then
+            echo "ログ変更なし"
+            exit 0
+          fi
+          git commit -m "log: 2号の雑談投稿記録を更新"
+          git pull --rebase origin main
+          git push
