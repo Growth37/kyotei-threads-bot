@@ -1,30 +1,23 @@
 #!/usr/bin/env python3
-"""@shantianzhi37 に予想以外の「雑談/画像」ポストを1日1本程度、ランダムな時刻に投稿する.
+"""@shantianzhi37 に予想以外の「ゆるい一言(雑談)」を1日1本程度、ランダムな時刻に投稿する.
 
-予想bot一色にならないよう、ゆるい一言(標準語)や画像を混ぜて人間味を出す。
+予想bot一色にならないよう、ファン目線のゆるい一言(標準語)を混ぜて人間味を出す。
 - 1日1本まで(chat_log_2.json で管理)
 - 毎スロット必ずは出さない(確率で間引いて不規則に)
-- images/ に画像(.jpg/.png)を置くと、たまに画像付きで投稿する
 """
 import json
 import os
 import random
 import sys
-import time
 from datetime import datetime
 
 import post_prediction as eng  # 1号botのエンジン(投稿関数)を流用
 
 JST = eng.JST
 LOG_FILE = "chat_log_2.json"
-IMAGES_DIR = "images"
-RAW_IMAGE_BASE = (
-    "https://raw.githubusercontent.com/Growth37/kyotei-threads-bot/main/images/"
-)
 WINDOW_START = "10:30"
 WINDOW_END = "21:00"
 POST_PROBABILITY = 0.5   # 各スロットで投稿する確率(不規則化)
-IMAGE_PROBABILITY = 0.5  # 画像がある時に画像付きにする確率
 
 CHATTER = [
     "今日もよろしくお願いします、ぼちぼちいきましょう",
@@ -67,6 +60,66 @@ CHATTER = [
     "焦らずまったり構えていきましょう",
     "一日お疲れさまでした、今日もありがとうございます",
     "明日もいいレースになりますように",
+    "おはようございます、今日も一日よろしくお願いします",
+    "今日ものんびり競艇を楽しみましょう",
+    "ターンマークのさばきは見ていて飽きませんね",
+    "モンキーターンが決まると鳥肌ものです",
+    "今日は水面が穏やかそうで、絶好のコンディションですね",
+    "雨の日は展開が読みにくいですが、それもまた一興です",
+    "今日のメインレースが楽しみです",
+    "一点勝負もいいですが、たまには手広くもありですね",
+    "当たった日の一杯は格別です",
+    "外した日は反省して、また明日に向かいます",
+    "今日もみなさんの的中を祈っています",
+    "競艇はスタートが命、あの緊張感がたまりません",
+    "予想している時間が一番楽しいかもしれません",
+    "今日もコツコツいきましょう、一発狙いもたまには",
+    "地元の選手が走ると応援に力が入ります",
+    "お昼を済ませたら午後のレースに集中します",
+    "今日の1号艇は信頼できそうでしょうか",
+    "差しが決まった時の美しさは芸術的ですね",
+    "今日もいい一日になりますように、いってらっしゃい",
+    "周回展示でモーターを見極めるのが大事ですね",
+    "今日は荒れ気配、こういう日こそ腕の見せ所です",
+    "無理な追いかけは禁物、落ち着いていきましょう",
+    "今日も平常心を大切にいきます",
+    "競艇歴は長くなりましたが、まだまだ勉強です",
+    "スリット隊形を見るのが好きです",
+    "今日の予想は自分でもいい出来だと思います",
+    "みなさん体調を崩さないように、水分補給も忘れずに",
+    "やはり生観戦は迫力が違いますね",
+    "今日もひとつずつ丁寧にいきましょう",
+    "的中が続くと競艇がますます好きになります",
+    "風向きが変わってきたので、少し読み直します",
+    "今日も肩の力を抜いて楽しみましょう",
+    "展示タイムを見ていると時間があっという間ですね",
+    "今日のナイターは冷えるので暖かくしてお過ごしください",
+    "一緒に盛り上がれる人がいると楽しさが倍になります",
+    "今日もワクワクが止まりません",
+    "渋い決着も派手な決着も、どちらも競艇の魅力です",
+    "今日はどの選手に注目しましょうか",
+    "そろそろ午後の部にいきましょうか",
+    "予想が的中した時は、少しだけ自慢させてください",
+    "今日も無理なく楽しむのが一番ですね",
+    "スタート勘のいい選手はやはり強いですね",
+    "今日もみなさんの舟券に幸あれ",
+    "競艇場のグルメも楽しみのひとつです",
+    "落ち着いて見極めれば、いい結果がついてくるはずです",
+    "今日も一喜一憂しながら楽しみましょう",
+    "まくり差しが決まると興奮しますね",
+    "今日のレースはどれも見応えがありそうです",
+    "焦らずマイペースでいきます",
+    "今日もひと勝負、気楽にいきましょう",
+    "予想外の展開も競艇の醍醐味ですね",
+    "今日もお疲れさまでした、ゆっくり休んでください",
+    "明日はどの場が開催でしょうか、調べておきます",
+    "今日も最後まで楽しんでいきましょう",
+    "当たっても調子に乗らず、謙虚にいきます",
+    "水面を見ていると心が落ち着きます",
+    "今日もみなさんと競艇の話ができて嬉しいです",
+    "ラストレースまで気を抜かずにいきましょう",
+    "今日も一日ありがとうございました、また明日",
+    "競艇あるあるで、負けた翌日に限って当たるんですよね",
 ]
 
 
@@ -88,51 +141,13 @@ def _posted_today(now) -> bool:
     return False
 
 
-def _append_log(post_id, kind, text, now):
+def _append_log(post_id, text, now):
     log = _load_log()
     log.append(
-        {
-            "post_id": post_id,
-            "kind": kind,
-            "text": text,
-            "posted_at": now.isoformat(),
-        }
+        {"post_id": post_id, "text": text, "posted_at": now.isoformat()}
     )
     with open(LOG_FILE, "w", encoding="utf-8") as f:
         json.dump(log, f, ensure_ascii=False, indent=2)
-
-
-def _list_images():
-    try:
-        return [
-            f
-            for f in sorted(os.listdir(IMAGES_DIR))
-            if f.lower().endswith((".jpg", ".jpeg", ".png"))
-        ]
-    except Exception:  # noqa: BLE001
-        return []
-
-
-def post_image(image_url, caption, user_id, token):
-    container = eng.http_post(
-        f"{eng.THREADS_API}/{user_id}/threads",
-        {
-            "media_type": "IMAGE",
-            "image_url": image_url,
-            "text": caption,
-            "access_token": token,
-        },
-    )
-    creation_id = container.get("id")
-    if not creation_id:
-        raise RuntimeError(f"画像コンテナ作成に失敗: {container}")
-    print(f"画像コンテナ作成OK: {creation_id} — 35秒待機します")
-    time.sleep(35)
-    result = eng.http_post(
-        f"{eng.THREADS_API}/{user_id}/threads_publish",
-        {"creation_id": creation_id, "access_token": token},
-    )
-    return result.get("id") or creation_id
 
 
 def main():
@@ -151,13 +166,9 @@ def main():
         print("今回はランダムで見送り(不規則化)。")
         return
 
-    rng = random.Random()
-    caption = rng.choice(CHATTER)
-    images = _list_images()
-    use_image = bool(images) and rng.random() < IMAGE_PROBABILITY
-
+    caption = random.Random().choice(CHATTER)
     print("---- 投稿内容 ----")
-    print(("[画像付き] " if use_image else "") + caption)
+    print(caption)
     print("------------------")
 
     if dry_run:
@@ -170,13 +181,8 @@ def main():
         sys.exit(1)
 
     user_id = eng.get_user_id(token)
-    if use_image:
-        image_url = RAW_IMAGE_BASE + rng.choice(images)
-        post_id = post_image(image_url, caption, user_id, token)
-        _append_log(post_id, "image", caption, now)
-    else:
-        post_id = eng.post_to_threads(caption, user_id, token)
-        _append_log(post_id, "text", caption, now)
+    post_id = eng.post_to_threads(caption, user_id, token)
+    _append_log(post_id, caption, now)
     print(f"投稿完了: {post_id}")
 
 
