@@ -8815,7 +8815,11 @@
    "1-6-4",
    "1-6-5"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-5-3",
+  "payout": 2950,
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18631819429046621",
