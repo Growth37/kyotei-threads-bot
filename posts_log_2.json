@@ -8690,7 +8690,11 @@
    "3-4-1",
    "3-4-2"
   ],
-  "announced": false
+  "announced": false,
+  "result": "4-2-1",
+  "payout": 15590,
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18246908248313273",
