@@ -21105,7 +21105,16 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {
+   "1h": 122
+  },
+  "views_at": {
+   "1h": 1.32
+  },
+  "result": "1-4-5",
+  "payout": 1030,
+  "hit": true,
+  "reply_posted": true
  },
  {
   "post_id": "18107004542627424",
