@@ -8972,7 +8972,11 @@
    "2-6-1",
    "2-6-5"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-2-3",
+  "payout": 3580,
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17926049934201999",
