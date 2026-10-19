@@ -9424,7 +9424,11 @@
    "1-5-3",
    "1-5-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "5-2-3",
+  "payout": 60210,
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17945807382355287",
@@ -9465,6 +9469,10 @@
    "1-6-3",
    "1-6-5"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-6-4",
+  "payout": 3730,
+  "hit": false,
+  "reply_posted": true
  }
 ]
