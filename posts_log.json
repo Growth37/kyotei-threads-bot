@@ -21346,6 +21346,15 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {
+   "1h": 258
+  },
+  "views_at": {
+   "1h": 1.35
+  },
+  "result": "1-6-4",
+  "payout": 31620,
+  "hit": false,
+  "reply_posted": true
  }
 ]
