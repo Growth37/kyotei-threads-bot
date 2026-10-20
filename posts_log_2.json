@@ -9591,7 +9591,11 @@
    "2-6-1",
    "2-6-3"
   ],
-  "announced": false
+  "announced": false,
+  "result": "2-1-6",
+  "payout": 780,
+  "hit": true,
+  "reply_posted": true
  },
  {
   "post_id": "17910113622511441",
