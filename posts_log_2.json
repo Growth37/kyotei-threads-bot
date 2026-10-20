@@ -9761,7 +9761,11 @@
    "1-4-3",
    "1-4-6"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-2-5",
+  "payout": 690,
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "17979258207128107",
