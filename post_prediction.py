@@ -708,11 +708,11 @@ def build_x_post(race):
     return text
 
 
-def post_to_x(text):
-    ck = os.environ.get("X_API_KEY", "").strip()
-    cs = os.environ.get("X_API_SECRET", "").strip()
-    tok = os.environ.get("X_ACCESS_TOKEN", "").strip()
-    toks = os.environ.get("X_ACCESS_SECRET", "").strip()
+def post_to_x(text, env_suffix=""):
+    ck = os.environ.get("X_API_KEY" + env_suffix, "").strip()
+    cs = os.environ.get("X_API_SECRET" + env_suffix, "").strip()
+    tok = os.environ.get("X_ACCESS_TOKEN" + env_suffix, "").strip()
+    toks = os.environ.get("X_ACCESS_SECRET" + env_suffix, "").strip()
     if not all([ck, cs, tok, toks]):
         print("Xのキーが未設定のため、Xへの投稿はスキップします。")
         return None
