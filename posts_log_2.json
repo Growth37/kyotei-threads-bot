@@ -9938,7 +9938,11 @@
    "1-5-3",
    "1-5-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "5-1-6",
+  "payout": 5110,
+  "hit": false,
+  "reply_posted": true
  },
  {
   "post_id": "18116138093271469",
