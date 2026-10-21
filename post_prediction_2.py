@@ -787,6 +787,36 @@ def blocks_for(race, mode):
     return blocks
 
 
+def build_x_post_2(race, blocks):
+    """2号用: Xの文字数(280/日本語実質140)に収まるコンパクト版を作る."""
+    stadium = STADIUMS.get(int(race["race_stadium_number"]), "不明")
+    rno = int(race["race_number"])
+    closed = race["race_closed_at"][11:16]
+    boats = sorted(race["boats"], key=eng.score_boat, reverse=True)[:4]
+    syms = ["◎", "○", "▲", "△"]
+
+    def ln(b):
+        return int(b.get("racer_boat_number") or 0)
+
+    def rn(b):
+        return str(b.get("racer_name") or "").replace("　", "")
+
+    def cl(b):
+        return eng.CLASSES.get(int(b.get("racer_class_number") or 4), "?")
+
+    header = f"🚤 {stadium}{rno}R (締切 {closed})"
+    picks = [f"{syms[i]} {ln(b)}号艇 {rn(b)} ({cl(b)})" for i, b in enumerate(boats)]
+    buy = ["🎯買い目", f"【本線】{blocks.get('honsen_disp', '')}"]
+    if blocks.get("shibori_disp"):
+        buy.append(f"【絞り】{blocks['shibori_disp']}")
+    if blocks.get("osae_lines"):
+        buy.append("【抑え】" + " / ".join(blocks["osae_lines"]))
+    text = "\n".join([header, ""] + picks + [""] + buy)
+    if eng._x_weighted_len(text) > 280:
+        text = "\n".join([header, ""] + buy)
+    return text
+
+
 def main():
     dry_run = os.environ.get("DRY_RUN", "0") == "1"
     now = datetime.now(JST)
@@ -815,6 +845,14 @@ def main():
     print("---- 投稿内容 ----")
     print(text)
     print("------------------")
+    try:
+        x_text = build_x_post_2(race, blocks)
+        print("---- X投稿内容(コンパクト) ----")
+        print(x_text)
+        print("------------------")
+    except Exception as _e:  # noqa: BLE001
+        x_text = None
+        print(f"X投稿文の生成に失敗(本体は継続): {_e}", file=sys.stderr)
 
     if dry_run:
         print("DRY_RUN=1 のため投稿はしません。")
@@ -827,6 +865,8 @@ def main():
 
     user_id = eng.get_user_id(token)
     post_id = eng.post_to_threads(text, user_id, token)
+    if x_text:
+        eng.post_to_x(x_text, "_2")
     append_log(post_id, race, now, blocks, mode)
 
 
