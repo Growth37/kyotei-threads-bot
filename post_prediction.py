@@ -17,6 +17,10 @@ import time
 import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
+import base64
+import hashlib
+import hmac
+import urllib.error
 
 JST = timezone(timedelta(hours=9))
 
@@ -646,6 +650,107 @@ def recently_posted(now, minutes: int = 45) -> bool:
         return False
 
 
+# ---- X(Twitter)へのコンパクト投稿 (OAuth1.0a / 標準ライブラリのみ) ----
+X_API_URL = "https://api.twitter.com/2/tweets"
+
+
+def _x_pe(v):
+    return urllib.parse.quote(str(v), safe="-._~")
+
+
+def _x_weighted_len(text):
+    n = 0
+    for ch in text:
+        cp = ord(ch)
+        if cp <= 0x10FF or 0x2000 <= cp <= 0x200D or 0x2010 <= cp <= 0x201F or 0x2032 <= cp <= 0x2037:
+            n += 1
+        else:
+            n += 2
+    return n
+
+
+def build_x_post(race):
+    """Xの文字数(280/日本語実質140)に収まるコンパクト版を作る."""
+    stadium = STADIUMS.get(int(race["race_stadium_number"]), "不明")
+    rno = int(race["race_number"])
+    closed = race["race_closed_at"][11:16]
+    boats = sorted(race["boats"], key=score_boat, reverse=True)
+    honmei, taikou, sanban, yonban, goban = boats[0], boats[1], boats[2], boats[3], boats[4]
+
+    def lane(b):
+        return int(b["racer_boat_number"])
+
+    def name(b):
+        return str(b["racer_name"]).replace("\u3000", "")
+
+    def cls(b):
+        return CLASSES.get(int(b.get("racer_class_number") or 4), "?")
+
+    h, t, s, f4, f5 = lane(honmei), lane(taikou), lane(sanban), lane(yonban), lane(goban)
+
+    def j(xs):
+        return "".join(str(x) for x in sorted(xs))
+
+    hon = f"{h}-{j([t, s, f4])}-{j([t, s, f4, f5])}"
+    shi = f"{h}-{j([t, s])}-{j([t, s, f4])}"
+    ner = f"{j([t, s])}-{h}-{j([t, s, f4])}"
+    header = f"\U0001f6a4 {stadium}{rno}R (締切 {closed})"
+    picks = [
+        f"\u25ce {h}号艇 {name(honmei)} ({cls(honmei)})",
+        f"\u25cb {t}号艇 {name(taikou)} ({cls(taikou)})",
+        f"\u25b2 {s}号艇 {name(sanban)} ({cls(sanban)})",
+        f"\u25b3 {f4}号艇 {name(yonban)} ({cls(yonban)})",
+    ]
+    buy = ["\U0001f3af買い目", f"【本命】{hon}", f"【絞り】{shi}", f"【狙い】{ner}"]
+    text = "\n".join([header, ""] + picks + [""] + buy)
+    if _x_weighted_len(text) > 280:
+        text = "\n".join([header, ""] + buy)
+    return text
+
+
+def post_to_x(text):
+    ck = os.environ.get("X_API_KEY", "").strip()
+    cs = os.environ.get("X_API_SECRET", "").strip()
+    tok = os.environ.get("X_ACCESS_TOKEN", "").strip()
+    toks = os.environ.get("X_ACCESS_SECRET", "").strip()
+    if not all([ck, cs, tok, toks]):
+        print("Xのキーが未設定のため、Xへの投稿はスキップします。")
+        return None
+    oauth = {
+        "oauth_consumer_key": ck,
+        "oauth_nonce": base64.b64encode(os.urandom(16)).decode().strip("="),
+        "oauth_signature_method": "HMAC-SHA1",
+        "oauth_timestamp": str(int(time.time())),
+        "oauth_token": tok,
+        "oauth_version": "1.0",
+    }
+    param_str = "&".join("{}={}".format(_x_pe(k), _x_pe(oauth[k])) for k in sorted(oauth))
+    base = "&".join(["POST", _x_pe(X_API_URL), _x_pe(param_str)])
+    key = "{}&{}".format(_x_pe(cs), _x_pe(toks))
+    oauth["oauth_signature"] = base64.b64encode(
+        hmac.new(key.encode(), base.encode(), hashlib.sha1).digest()
+    ).decode()
+    auth = "OAuth " + ", ".join(
+        '{}="{}"'.format(_x_pe(k), _x_pe(oauth[k])) for k in sorted(oauth)
+    )
+    body = json.dumps({"text": text}).encode("utf-8")
+    req = urllib.request.Request(X_API_URL, data=body, method="POST")
+    req.add_header("Authorization", auth)
+    req.add_header("Content-Type", "application/json")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        tid = (data.get("data") or {}).get("id")
+        print(f"X投稿OK: {tid}")
+        return tid
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode("utf-8", "ignore")[:300]
+        print(f"X投稿エラー: HTTP {e.code} {detail}", file=sys.stderr)
+    except Exception as e:  # noqa: BLE001
+        print(f"X投稿エラー: {e}", file=sys.stderr)
+    return None
+
+
 def main():
     dry_run = os.environ.get("DRY_RUN", "0") == "1"
     now = datetime.now(JST)
@@ -674,6 +779,14 @@ def main():
     print("---- 投稿内容 ----")
     print(text)
     print("------------------")
+    try:
+        x_text = build_x_post(race)
+        print("---- X投稿内容(コンパクト) ----")
+        print(x_text)
+        print("------------------")
+    except Exception as _e:  # noqa: BLE001
+        x_text = None
+        print(f"X投稿文の生成に失敗(本体は継続): {_e}", file=sys.stderr)
 
     if dry_run:
         print("DRY_RUN=1 のため投稿はしません。")
@@ -686,6 +799,8 @@ def main():
 
     user_id = get_user_id(token)
     post_id = post_to_threads(text, user_id, token)
+    if x_text:
+        post_to_x(x_text)
     append_log(post_id, race, now)
 
 
