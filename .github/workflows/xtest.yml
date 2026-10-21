@@ -1,0 +1,40 @@
+name: X投稿テスト
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: xtest
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  xtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: X投稿テストを実行
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+        run: python xtest.py
+      - name: 結果をコミット
+        run: |
+          git config user.name "kyotei-bot"
+          git config user.email "kyotei-bot@users.noreply.github.com"
+          [ -f xtest_result.txt ] && git add xtest_result.txt; true
+          if git diff --cached --quiet; then
+            echo "変更なし"
+            exit 0
+          fi
+          git commit -m "xtest: X投稿テスト結果"
+          git pull --rebase origin main
+          git push
