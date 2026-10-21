@@ -846,8 +846,8 @@ def main():
     print(text)
     print("------------------")
     try:
-        x_text = build_x_post_2(race, blocks)
-        print("---- X投稿内容(コンパクト) ----")
+        x_text = text if eng._x_weighted_len(text) <= 280 else build_x_post_2(race, blocks)
+        print("---- X投稿内容 ----")
         print(x_text)
         print("------------------")
     except Exception as _e:  # noqa: BLE001
