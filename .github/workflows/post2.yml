@@ -49,6 +49,10 @@ jobs:
       - name: 予想を生成してThreadsに投稿
         env:
           THREADS_ACCESS_TOKEN_2: ${{ secrets.THREADS_ACCESS_TOKEN_2 }}
+          X_API_KEY_2: ${{ secrets.X_API_KEY_2 }}
+          X_API_SECRET_2: ${{ secrets.X_API_SECRET_2 }}
+          X_ACCESS_TOKEN_2: ${{ secrets.X_ACCESS_TOKEN_2 }}
+          X_ACCESS_SECRET_2: ${{ secrets.X_ACCESS_SECRET_2 }}
           DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
         run: python post_prediction_2.py
       - name: 投稿ログをコミット
