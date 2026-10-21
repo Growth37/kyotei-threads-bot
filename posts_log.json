@@ -22135,11 +22135,16 @@
    "1-6-3",
    "1-6-4"
   ],
-  "views": {},
+  "views": {
+   "1h": 112
+  },
   "result": "1-4-6",
   "payout": 2450,
   "hit": true,
-  "reply_posted": true
+  "reply_posted": true,
+  "views_at": {
+   "1h": 1.32
+  }
  },
  {
   "post_id": "18203733133336764",
