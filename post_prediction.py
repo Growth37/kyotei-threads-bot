@@ -604,7 +604,7 @@ def post_to_threads(text: str, user_id: str, token: str):
     return result["id"]
 
 
-def append_log(post_id: str, race: dict, now):
+def append_log(post_id: str, race: dict, now, x_post_id=None):
     """posts_log.json に投稿記録を追記する(トラッキング用)."""
     log_file = "posts_log.json"
     log = []
@@ -618,6 +618,7 @@ def append_log(post_id: str, race: dict, now):
     shibori_c = build_shibori(*lanes[:4])
     log.append({
         "post_id": post_id,
+        "x_post_id": x_post_id,
         "posted_at": now.isoformat(timespec="seconds"),
         "race_date": race.get("race_date") or now.strftime("%Y-%m-%d"),
         "stadium_number": int(race["race_stadium_number"]),
@@ -708,7 +709,7 @@ def build_x_post(race):
     return text
 
 
-def post_to_x(text, env_suffix=""):
+def post_to_x(text, env_suffix="", reply_to=None):
     ck = os.environ.get("X_API_KEY" + env_suffix, "").strip()
     cs = os.environ.get("X_API_SECRET" + env_suffix, "").strip()
     tok = os.environ.get("X_ACCESS_TOKEN" + env_suffix, "").strip()
@@ -716,7 +717,10 @@ def post_to_x(text, env_suffix=""):
     if not all([ck, cs, tok, toks]):
         print("Xのキーが未設定のため、Xへの投稿はスキップします。")
         return None
-    body = json.dumps({"text": text}).encode("utf-8")
+    payload = {"text": text}
+    if reply_to:
+        payload["reply"] = {"in_reply_to_tweet_id": str(reply_to)}
+    body = json.dumps(payload).encode("utf-8")
     attempts = 3
     for i in range(attempts):
         oauth = {
@@ -807,9 +811,8 @@ def main():
 
     user_id = get_user_id(token)
     post_id = post_to_threads(text, user_id, token)
-    if x_text:
-        post_to_x(x_text)
-    append_log(post_id, race, now)
+    x_post_id = post_to_x(x_text) if x_text else None
+    append_log(post_id, race, now, x_post_id)
 
 
 if __name__ == "__main__":
