@@ -689,7 +689,7 @@ def build_post(race, blocks, mode) -> str:
     return "\n".join(lines)[:500]
 
 
-def append_log(post_id, race, now, blocks, mode):
+def append_log(post_id, race, now, blocks, mode, x_post_id=None):
     log = []
     if os.path.exists(LOG_FILE):
         with open(LOG_FILE, encoding="utf-8") as f:
@@ -699,6 +699,7 @@ def append_log(post_id, race, now, blocks, mode):
     )))
     log.append({
         "post_id": post_id,
+        "x_post_id": x_post_id,
         "posted_at": now.isoformat(timespec="seconds"),
         "race_date": race.get("race_date") or now.strftime("%Y-%m-%d"),
         "stadium_number": int(race["race_stadium_number"]),
@@ -865,9 +866,8 @@ def main():
 
     user_id = eng.get_user_id(token)
     post_id = eng.post_to_threads(text, user_id, token)
-    if x_text:
-        eng.post_to_x(x_text, "_2")
-    append_log(post_id, race, now, blocks, mode)
+    x_post_id = eng.post_to_x(x_text, "_2") if x_text else None
+    append_log(post_id, race, now, blocks, mode, x_post_id)
 
 
 if __name__ == "__main__":
