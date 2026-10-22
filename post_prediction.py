@@ -716,38 +716,46 @@ def post_to_x(text, env_suffix=""):
     if not all([ck, cs, tok, toks]):
         print("Xのキーが未設定のため、Xへの投稿はスキップします。")
         return None
-    oauth = {
-        "oauth_consumer_key": ck,
-        "oauth_nonce": base64.b64encode(os.urandom(16)).decode().strip("="),
-        "oauth_signature_method": "HMAC-SHA1",
-        "oauth_timestamp": str(int(time.time())),
-        "oauth_token": tok,
-        "oauth_version": "1.0",
-    }
-    param_str = "&".join("{}={}".format(_x_pe(k), _x_pe(oauth[k])) for k in sorted(oauth))
-    base = "&".join(["POST", _x_pe(X_API_URL), _x_pe(param_str)])
-    key = "{}&{}".format(_x_pe(cs), _x_pe(toks))
-    oauth["oauth_signature"] = base64.b64encode(
-        hmac.new(key.encode(), base.encode(), hashlib.sha1).digest()
-    ).decode()
-    auth = "OAuth " + ", ".join(
-        '{}="{}"'.format(_x_pe(k), _x_pe(oauth[k])) for k in sorted(oauth)
-    )
     body = json.dumps({"text": text}).encode("utf-8")
-    req = urllib.request.Request(X_API_URL, data=body, method="POST")
-    req.add_header("Authorization", auth)
-    req.add_header("Content-Type", "application/json")
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-        tid = (data.get("data") or {}).get("id")
-        print(f"X投稿OK: {tid}")
-        return tid
-    except urllib.error.HTTPError as e:
-        detail = e.read().decode("utf-8", "ignore")[:300]
-        print(f"X投稿エラー: HTTP {e.code} {detail}", file=sys.stderr)
-    except Exception as e:  # noqa: BLE001
-        print(f"X投稿エラー: {e}", file=sys.stderr)
+    attempts = 3
+    for i in range(attempts):
+        oauth = {
+            "oauth_consumer_key": ck,
+            "oauth_nonce": base64.b64encode(os.urandom(16)).decode().strip("="),
+            "oauth_signature_method": "HMAC-SHA1",
+            "oauth_timestamp": str(int(time.time())),
+            "oauth_token": tok,
+            "oauth_version": "1.0",
+        }
+        param_str = "&".join("{}={}".format(_x_pe(k), _x_pe(oauth[k])) for k in sorted(oauth))
+        base = "&".join(["POST", _x_pe(X_API_URL), _x_pe(param_str)])
+        key = "{}&{}".format(_x_pe(cs), _x_pe(toks))
+        oauth["oauth_signature"] = base64.b64encode(
+            hmac.new(key.encode(), base.encode(), hashlib.sha1).digest()
+        ).decode()
+        auth = "OAuth " + ", ".join(
+            '{}="{}"'.format(_x_pe(k), _x_pe(oauth[k])) for k in sorted(oauth)
+        )
+        req = urllib.request.Request(X_API_URL, data=body, method="POST")
+        req.add_header("Authorization", auth)
+        req.add_header("Content-Type", "application/json")
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            tid = (data.get("data") or {}).get("id")
+            print(f"X投稿OK: {tid}")
+            return tid
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode("utf-8", "ignore")[:300]
+            print(f"X投稿エラー: HTTP {e.code} {detail}", file=sys.stderr)
+            if e.code not in (429, 500, 502, 503, 504) or i == attempts - 1:
+                return None
+        except Exception as e:  # noqa: BLE001
+            print(f"X投稿エラー: {e}", file=sys.stderr)
+            if i == attempts - 1:
+                return None
+        print(f"X投稿を再試行します({i + 1}/{attempts - 1})", file=sys.stderr)
+        time.sleep(2 * (i + 1))
     return None
 
 
