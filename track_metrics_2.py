@@ -27,6 +27,7 @@ import urllib.request
 from datetime import datetime, timedelta
 
 import track_metrics as tm  # 結果取得ロジックを流用
+import post_prediction as eng  # X投稿(リプライ)用
 
 JST = tm.JST
 THREADS_API = tm.THREADS_API
@@ -424,6 +425,30 @@ def post_reply(entry, token, user_id) -> bool:
     return False
 
 
+def post_x_reply(entry) -> bool:
+    """予想のXツイートへ結果を1回だけリプライ(ぶら下げ)する."""
+    xid = entry.get("x_post_id")
+    if not xid:
+        return False
+    combo = entry.get("result") or ""
+    mult = _mult_str(entry.get("payout"))
+    hit = bool(entry.get("hit"))
+    mark = "的中🎯" if hit else "❌"
+    header = (combo + "　" + mult + "倍" + mark) if mult else (combo + "　" + mark)
+    comment = _fallback_comment(entry, None, hit)
+    text = header + "\n" + comment
+    if eng._x_weighted_len(text) > 280:
+        text = header
+    try:
+        rid = eng.post_to_x(text, "_2", reply_to=xid)
+        if rid:
+            print("  Xリプライ完了! tweet id = " + str(rid))
+            return True
+    except Exception as ex:  # noqa: BLE001
+        print("  Xリプライ投稿エラー: " + str(ex))
+    return False
+
+
 def main():
     token = os.environ.get("THREADS_ACCESS_TOKEN_2", "").strip()
     if not token:
@@ -485,6 +510,22 @@ def main():
                 if post_reply(e, token, user_id):
                     e["reply_posted"] = True
                     changed = True
+
+        # X(ツイート)にも、予想ツイートへ結果を1回だけリプライする。
+        if e.get("result") and e.get("x_post_id") and not e.get("x_reply_posted"):
+            try:
+                closed_x = datetime.strptime(
+                    e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
+                ).replace(tzinfo=JST)
+                fresh_x = (now - closed_x) <= timedelta(minutes=90)
+            except (ValueError, KeyError):
+                fresh_x = False
+            if not fresh_x:
+                e["x_reply_posted"] = True
+                changed = True
+            elif post_x_reply(e):
+                e["x_reply_posted"] = True
+                changed = True
 
     if changed:
         with open(LOG_FILE, "w", encoding="utf-8") as f:
