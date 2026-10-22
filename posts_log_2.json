@@ -10438,6 +10438,11 @@
    "1-5-3",
    "1-5-6"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-4-2",
+  "payout": 3250,
+  "hit": false,
+  "reply_posted": true,
+  "x_reply_posted": true
  }
 ]
