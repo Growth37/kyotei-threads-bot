@@ -10570,7 +10570,8 @@
   "result": "1-2-3",
   "payout": 410,
   "hit": true,
-  "reply_posted": true
+  "reply_posted": true,
+  "x_reply_posted": true
  },
  {
   "post_id": "18148260544601849",
