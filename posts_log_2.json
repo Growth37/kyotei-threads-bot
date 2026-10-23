@@ -10486,7 +10486,8 @@
   "result": "3-1-6",
   "payout": 2030,
   "hit": false,
-  "reply_posted": true
+  "reply_posted": true,
+  "x_reply_posted": true
  },
  {
   "post_id": "17953214556339789",
