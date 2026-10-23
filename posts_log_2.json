@@ -10650,7 +10650,12 @@
    "1-6-3",
    "1-6-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-6-2",
+  "payout": 860,
+  "hit": true,
+  "reply_posted": true,
+  "x_reply_posted": true
  },
  {
   "post_id": "18115173614043486",
