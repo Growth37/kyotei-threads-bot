@@ -151,6 +151,9 @@ def _append_log(post_id, text, now):
 
 
 def main():
+    if not eng.THREADS_ENABLED:
+        print("Threads投稿は停止中(THREADS_ENABLED=False)のためスキップします。")
+        return
     dry_run = os.environ.get("DRY_RUN", "0") == "1"
     now = datetime.now(JST)
     print(f"実行時刻(JST): {now:%Y-%m-%d %H:%M}")
