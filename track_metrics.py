@@ -533,6 +533,8 @@ def _fallback_comment(entry, race, hit):
 
 def post_reply(entry, token, user_id) -> bool:
     """予想投稿へのリプライ。的中/不的中どちらも結果行＋関西弁コメントを返信."""
+    if not eng.THREADS_ENABLED:
+        return False
     pid = entry.get("post_id")
     if not pid:
         return False
