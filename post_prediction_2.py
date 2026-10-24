@@ -859,13 +859,16 @@ def main():
         print("DRY_RUN=1 のため投稿はしません。")
         return
 
-    token = os.environ.get("THREADS_ACCESS_TOKEN_2", "").strip()
-    if not token:
-        print("THREADS_ACCESS_TOKEN_2 が未設定です。", file=sys.stderr)
-        sys.exit(1)
-
-    user_id = eng.get_user_id(token)
-    post_id = eng.post_to_threads(text, user_id, token)
+    post_id = None
+    if eng.THREADS_ENABLED:
+        token = os.environ.get("THREADS_ACCESS_TOKEN_2", "").strip()
+        if not token:
+            print("THREADS_ACCESS_TOKEN_2 が未設定です。", file=sys.stderr)
+            sys.exit(1)
+        user_id = eng.get_user_id(token)
+        post_id = eng.post_to_threads(text, user_id, token)
+    else:
+        print("Threads投稿は停止中(THREADS_ENABLED=False)のためスキップします。")
     x_post_id = eng.post_to_x(x_text, "_2") if x_text else None
     append_log(post_id, race, now, blocks, mode, x_post_id)
 
