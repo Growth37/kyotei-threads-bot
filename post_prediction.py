@@ -27,6 +27,10 @@ JST = timezone(timedelta(hours=9))
 PROGRAMS_URL = "https://boatraceopenapi.github.io/programs/v2/today.json"
 THREADS_API = "https://graph.threads.net/v1.0"
 
+# Threads一時停止スイッチ。アカウント復活時に True に戻すとThreads投稿が再開する。
+# X(@r_no_yosou/@da_yama7777)への投稿はこのスイッチの影響を受けず継続する。
+THREADS_ENABLED = False
+
 # 公式サイト(boatrace.jp)— 無料APIが本日分を未反映のときのフォールバック取得先
 OFFICIAL_INDEX = "https://www.boatrace.jp/owpc/pc/race/index?hd={ymd}"
 OFFICIAL_RACEINDEX = "https://www.boatrace.jp/owpc/pc/race/raceindex?jcd={jcd:02d}&hd={ymd}"
@@ -804,13 +808,16 @@ def main():
         print("DRY_RUN=1 のため投稿はしません。")
         return
 
-    token = os.environ.get("THREADS_ACCESS_TOKEN", "").strip()
-    if not token:
-        print("THREADS_ACCESS_TOKEN が未設定です。", file=sys.stderr)
-        sys.exit(1)
-
-    user_id = get_user_id(token)
-    post_id = post_to_threads(text, user_id, token)
+    post_id = None
+    if THREADS_ENABLED:
+        token = os.environ.get("THREADS_ACCESS_TOKEN", "").strip()
+        if not token:
+            print("THREADS_ACCESS_TOKEN が未設定です。", file=sys.stderr)
+            sys.exit(1)
+        user_id = get_user_id(token)
+        post_id = post_to_threads(text, user_id, token)
+    else:
+        print("Threads投稿は停止中(THREADS_ENABLED=False)のためスキップします。")
     x_post_id = post_to_x(x_text) if x_text else None
     append_log(post_id, race, now, x_post_id)
 
