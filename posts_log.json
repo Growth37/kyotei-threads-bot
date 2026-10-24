@@ -23006,6 +23006,11 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-3-4",
+  "payout": 1020,
+  "hit": true,
+  "reply_posted": true,
+  "x_reply_posted": true
  }
 ]
