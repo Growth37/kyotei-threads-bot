@@ -23114,7 +23114,12 @@
    "1-5-3",
    "1-5-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-4-6",
+  "payout": 1300,
+  "hit": false,
+  "reply_posted": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
@@ -23163,7 +23168,12 @@
    "1-3-2",
    "1-3-6"
   ],
-  "views": {}
+  "views": {},
+  "result": "2-4-5",
+  "payout": 2210,
+  "hit": false,
+  "reply_posted": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
