@@ -23222,7 +23222,12 @@
    "1-3-2",
    "1-3-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "3-1-2",
+  "payout": 4390,
+  "hit": true,
+  "reply_posted": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
@@ -23271,7 +23276,12 @@
    "1-5-3",
    "1-5-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-3-4",
+  "payout": 920,
+  "hit": true,
+  "reply_posted": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
@@ -23320,6 +23330,11 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-3-4",
+  "payout": 730,
+  "hit": true,
+  "reply_posted": true,
+  "x_reply_posted": true
  }
 ]
