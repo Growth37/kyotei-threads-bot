@@ -11135,7 +11135,12 @@
    "1-4-3",
    "1-4-5"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-4-2",
+  "payout": 480,
+  "hit": true,
+  "reply_posted": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
