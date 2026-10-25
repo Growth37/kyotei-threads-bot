@@ -23060,7 +23060,12 @@
    "1-3-2",
    "1-3-5"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-2-5",
+  "payout": 2470,
+  "hit": true,
+  "reply_posted": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
