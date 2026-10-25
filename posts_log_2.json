@@ -11182,6 +11182,11 @@
    "1-6-3",
    "1-6-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "3-1-2",
+  "payout": 7570,
+  "hit": false,
+  "reply_posted": true,
+  "x_reply_posted": true
  }
 ]
