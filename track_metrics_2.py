@@ -495,7 +495,7 @@ def main():
 
         # 3) 結果が出ていてまだリプライしていない投稿は、的中/不的中どちらも
         #    予想投稿へ1回だけリプライする(結果を見た人間味コメント付き)。
-        if e.get("result") and not e.get("reply_posted"):
+        if eng.THREADS_ENABLED and e.get("result") and not e.get("reply_posted"):
             try:
                 closed_r = datetime.strptime(
                     e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
