@@ -11229,7 +11229,8 @@
   "announced": false,
   "result": "2-3-1",
   "payout": 5040,
-  "hit": false
+  "hit": false,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
