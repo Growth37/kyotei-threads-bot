@@ -23437,7 +23437,11 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "2-3-4",
+  "payout": 10210,
+  "hit": false,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
