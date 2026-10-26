@@ -11508,6 +11508,7 @@
   "announced": false,
   "result": "1-2-4",
   "payout": 1040,
-  "hit": false
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
