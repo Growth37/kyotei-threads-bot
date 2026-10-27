@@ -23702,7 +23702,11 @@
    "1-4-2",
    "1-4-6"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-4-2",
+  "payout": 560,
+  "hit": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
