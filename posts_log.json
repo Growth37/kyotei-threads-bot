@@ -23649,6 +23649,10 @@
    "1-3-2",
    "1-3-5"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-2-3",
+  "payout": 640,
+  "hit": true,
+  "x_reply_posted": true
  }
 ]
