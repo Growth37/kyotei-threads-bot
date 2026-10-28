@@ -29,6 +29,10 @@ score_boat = eng.score_boat
 LOG_FILE = "posts_log_2.json"
 OTHER_LOG = "posts_log.json"  # @r_no_yosou 側(重複回避用)
 
+# 2号のX投稿スイッチ。@da_yama7777 のX APIがX社にブロックされたため停止中。
+# 復活時に True へ戻すとX投稿(予想・結果リプ)が再開する。1号(@r_no_yosou)のXには影響しない。
+X_ENABLED = False
+
 # 3投稿の予定時刻(JST)。中穴狙いの自動割当に使う。
 SCHEDULE = ["11:41", "13:26", "18:41"]
 
@@ -869,7 +873,12 @@ def main():
         post_id = eng.post_to_threads(text, user_id, token)
     else:
         print("Threads投稿は停止中(THREADS_ENABLED=False)のためスキップします。")
-    x_post_id = eng.post_to_x(x_text, "_2") if x_text else None
+    if x_text and X_ENABLED:
+        x_post_id = eng.post_to_x(x_text, "_2")
+    else:
+        x_post_id = None
+        if x_text:
+            print("2号のX投稿は停止中(X_ENABLED=False)のためスキップします。")
     append_log(post_id, race, now, blocks, mode, x_post_id)
 
 
