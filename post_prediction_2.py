@@ -29,11 +29,11 @@ score_boat = eng.score_boat
 LOG_FILE = "posts_log_2.json"
 OTHER_LOG = "posts_log.json"  # @r_no_yosou 側(重複回避用)
 
-# 5投稿の予定時刻(JST)。中穴狙いの自動割当に使う。
-SCHEDULE = ["10:14", "11:41", "13:26", "15:12", "18:41"]
+# 3投稿の予定時刻(JST)。中穴狙いの自動割当に使う。
+SCHEDULE = ["11:41", "13:26", "18:41"]
 
 # この時間帯は必ず「堅いレース」にする(中穴を割り当てない)
-FORCE_SOLID = {"11:41", "15:12"}
+FORCE_SOLID = {"11:41"}
 
 # 投稿の時間帯ガード(クーロン遅延対策)
 WINDOW_START = "10:00"
@@ -294,7 +294,7 @@ def select(programs, now):
     if not cands:
         return None, None
 
-    # 11:36 / 15:05 の枠は必ず堅いレース(中穴を割り当てない)
+    # 11:41 の枠は必ず堅いレース(中穴を割り当てない)
     if _current_slot(now) in FORCE_SOLID:
         return pick_solid(cands), "堅い"
 
