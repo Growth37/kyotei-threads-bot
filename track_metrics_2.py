@@ -28,6 +28,7 @@ from datetime import datetime, timedelta
 
 import track_metrics as tm  # 結果取得ロジックを流用
 import post_prediction as eng  # X投稿(リプライ)用
+import post_prediction_2 as eng2  # 2号のXスイッチ参照用
 
 JST = tm.JST
 THREADS_API = tm.THREADS_API
@@ -514,7 +515,7 @@ def main():
                     changed = True
 
         # X(ツイート)にも、予想ツイートへ結果を1回だけリプライする。
-        if e.get("result") and e.get("x_post_id") and not e.get("x_reply_posted"):
+        if eng2.X_ENABLED and e.get("result") and e.get("x_post_id") and not e.get("x_reply_posted"):
             try:
                 closed_x = datetime.strptime(
                     e["race_closed_at"], "%Y-%m-%d %H:%M:%S"
