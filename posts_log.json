@@ -24126,7 +24126,11 @@
    "1-5-2",
    "1-5-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "4-1-6",
+  "payout": 2720,
+  "hit": false,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
