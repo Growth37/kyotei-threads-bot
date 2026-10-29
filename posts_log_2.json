@@ -12091,7 +12091,10 @@
    "3-4-1",
    "3-4-2"
   ],
-  "announced": false
+  "announced": false,
+  "result": "3-1-6",
+  "payout": 9190,
+  "hit": false
  },
  {
   "post_id": null,
