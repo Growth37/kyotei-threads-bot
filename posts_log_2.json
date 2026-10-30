@@ -12388,7 +12388,10 @@
    "6-1-2",
    "6-1-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "6-1-4",
+  "payout": 3850,
+  "hit": true
  },
  {
   "post_id": null,
