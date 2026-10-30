@@ -24709,7 +24709,11 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "3-4-1",
+  "payout": 8240,
+  "hit": false,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
