@@ -12670,7 +12670,10 @@
    "1-5-3",
    "1-5-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-4-3",
+  "payout": 1720,
+  "hit": true
  },
  {
   "post_id": null,
