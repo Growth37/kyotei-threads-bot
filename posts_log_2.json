@@ -12760,6 +12760,9 @@
    "1-5-3",
    "1-5-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "2-3-1",
+  "payout": 9960,
+  "hit": false
  }
 ]
