@@ -24868,6 +24868,10 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-2-5",
+  "payout": 1080,
+  "hit": true,
+  "x_reply_posted": true
  }
 ]
