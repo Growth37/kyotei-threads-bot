@@ -24974,7 +24974,11 @@
    "1-6-2",
    "1-6-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "5-3-1",
+  "payout": 228940,
+  "hit": false,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
