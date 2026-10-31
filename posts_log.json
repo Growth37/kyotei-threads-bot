@@ -25133,6 +25133,10 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-3-5",
+  "payout": 3530,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
