@@ -25451,7 +25451,11 @@
    "1-6-2",
    "1-6-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-3-4",
+  "payout": 1040,
+  "hit": false,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
@@ -25500,6 +25504,10 @@
    "1-5-2",
    "1-5-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-3-4",
+  "payout": 1650,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
