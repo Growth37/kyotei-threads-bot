@@ -13174,7 +13174,10 @@
    "2-3-1",
    "2-3-5"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-2-5",
+  "payout": 1310,
+  "hit": true
  },
  {
   "post_id": null,
