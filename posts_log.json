@@ -26140,6 +26140,10 @@
    "1-6-3",
    "1-6-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-5-6",
+  "payout": 5580,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
