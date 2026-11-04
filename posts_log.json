@@ -26034,6 +26034,10 @@
    "1-3-2",
    "1-3-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "4-1-5",
+  "payout": 18560,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
