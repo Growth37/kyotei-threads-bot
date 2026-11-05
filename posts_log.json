@@ -26299,7 +26299,11 @@
    "1-4-2",
    "1-4-5"
   ],
-  "views": {}
+  "views": {},
+  "result": "4-2-1",
+  "payout": 4930,
+  "hit": false,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
