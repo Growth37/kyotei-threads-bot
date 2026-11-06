@@ -26511,7 +26511,11 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-2-4",
+  "payout": 560,
+  "hit": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
