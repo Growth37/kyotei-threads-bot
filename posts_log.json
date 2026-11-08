@@ -27143,7 +27143,11 @@
    "1-5-2",
    "1-5-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-4-2",
+  "payout": 890,
+  "hit": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
