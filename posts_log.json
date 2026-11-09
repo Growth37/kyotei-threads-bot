@@ -27620,6 +27620,10 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "2-5-1",
+  "payout": 38870,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
