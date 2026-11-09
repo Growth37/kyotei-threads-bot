@@ -15118,6 +15118,9 @@
    "1-6-3",
    "1-6-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-2-6",
+  "payout": 790,
+  "hit": true
  }
 ]
