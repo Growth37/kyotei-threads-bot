@@ -27885,6 +27885,10 @@
    "1-3-2",
    "1-3-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "3-4-1",
+  "payout": 8030,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
