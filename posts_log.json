@@ -27673,6 +27673,10 @@
    "1-3-2",
    "1-3-5"
   ],
-  "views": {}
+  "views": {},
+  "result": "6-1-3",
+  "payout": 23800,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
