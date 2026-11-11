@@ -28044,7 +28044,11 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "3-1-4",
+  "payout": 2570,
+  "hit": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
