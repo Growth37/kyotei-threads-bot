@@ -28680,6 +28680,10 @@
    "1-4-3",
    "1-4-6"
   ],
-  "views": {}
+  "views": {},
+  "result": "4-1-6",
+  "payout": 3550,
+  "hit": true,
+  "x_reply_posted": true
  }
 ]
