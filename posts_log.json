@@ -28468,7 +28468,11 @@
    "1-3-2",
    "1-3-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-3-4",
+  "payout": 670,
+  "hit": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
