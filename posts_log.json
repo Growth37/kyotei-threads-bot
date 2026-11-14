@@ -28892,7 +28892,11 @@
    "1-4-3",
    "1-4-6"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-4-3",
+  "payout": 840,
+  "hit": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
