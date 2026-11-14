@@ -28998,6 +28998,10 @@
    "1-5-2",
    "1-5-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "4-1-5",
+  "payout": 46140,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
