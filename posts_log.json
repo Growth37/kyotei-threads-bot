@@ -29051,6 +29051,10 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "2-1-4",
+  "payout": 7530,
+  "hit": true,
+  "x_reply_posted": true
  }
 ]
