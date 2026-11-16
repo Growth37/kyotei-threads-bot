@@ -16840,6 +16840,9 @@
    "3-1-2",
    "3-1-6"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-2-5",
+  "payout": 970,
+  "hit": false
  }
 ]
