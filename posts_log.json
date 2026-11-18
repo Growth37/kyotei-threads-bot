@@ -30058,6 +30058,10 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "5-1-3",
+  "payout": 22860,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
