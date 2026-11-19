@@ -30270,7 +30270,11 @@
    "1-3-2",
    "1-3-5"
   ],
-  "views": {}
+  "views": {},
+  "result": "4-6-1",
+  "payout": 13910,
+  "hit": false,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
