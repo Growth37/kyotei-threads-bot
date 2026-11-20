@@ -17620,7 +17620,10 @@
    "2-3-1",
    "2-3-6"
   ],
-  "announced": false
+  "announced": false,
+  "result": "4-3-6",
+  "payout": 41630,
+  "hit": false
  },
  {
   "post_id": null,
