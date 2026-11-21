@@ -30849,6 +30849,10 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-4-3",
+  "payout": 740,
+  "hit": true,
+  "x_reply_posted": true
  }
 ]
