@@ -31220,6 +31220,10 @@
    "1-3-2",
    "1-3-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-2-4",
+  "payout": 720,
+  "hit": true,
+  "x_reply_posted": true
  }
 ]
