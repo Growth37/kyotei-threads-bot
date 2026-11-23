@@ -18441,7 +18441,10 @@
    "5-1-2",
    "5-1-4"
   ],
-  "announced": false
+  "announced": false,
+  "result": "1-5-4",
+  "payout": 860,
+  "hit": false
  },
  {
   "post_id": null,
