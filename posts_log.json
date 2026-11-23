@@ -31273,6 +31273,10 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-2-3",
+  "payout": 2350,
+  "hit": true,
+  "x_reply_posted": true
  }
 ]
