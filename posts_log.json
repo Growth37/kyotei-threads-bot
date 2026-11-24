@@ -31591,6 +31591,10 @@
    "1-5-3",
    "1-5-6"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-5-3",
+  "payout": 2100,
+  "hit": true,
+  "x_reply_posted": true
  }
 ]
