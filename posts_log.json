@@ -31852,6 +31852,10 @@
    "1-6-2",
    "1-6-5"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-6-5",
+  "payout": 1380,
+  "hit": true,
+  "x_reply_posted": true
  }
 ]
