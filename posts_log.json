@@ -31693,6 +31693,10 @@
    "1-5-3",
    "1-5-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "5-4-1",
+  "payout": 15520,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
