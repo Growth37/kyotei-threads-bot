@@ -18842,7 +18842,10 @@
    "2-6-1",
    "2-6-3"
   ],
-  "announced": false
+  "announced": false,
+  "result": "2-1-6",
+  "payout": 960,
+  "hit": true
  },
  {
   "post_id": null,
