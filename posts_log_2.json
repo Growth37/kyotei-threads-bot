@@ -18947,7 +18947,10 @@
    "6-1-2",
    "6-1-5"
   ],
-  "announced": false
+  "announced": false,
+  "result": "3-2-4",
+  "payout": 42330,
+  "hit": false
  },
  {
   "post_id": null,
