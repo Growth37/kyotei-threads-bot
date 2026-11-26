@@ -32117,7 +32117,11 @@
    "1-6-2",
    "1-6-5"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-4-6",
+  "payout": 3520,
+  "hit": false,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
