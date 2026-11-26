@@ -31958,6 +31958,10 @@
    "1-5-2",
    "1-5-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "2-5-3",
+  "payout": 9690,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
