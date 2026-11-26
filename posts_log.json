@@ -32170,6 +32170,10 @@
    "1-4-2",
    "1-4-3"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-5-4",
+  "payout": 1960,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
