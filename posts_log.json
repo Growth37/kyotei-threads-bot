@@ -32011,6 +32011,10 @@
    "1-4-2",
    "1-4-5"
   ],
-  "views": {}
+  "views": {},
+  "result": "4-6-1",
+  "payout": 8740,
+  "hit": false,
+  "x_reply_posted": true
  }
 ]
