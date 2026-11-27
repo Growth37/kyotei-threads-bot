@@ -32223,7 +32223,11 @@
    "1-3-2",
    "1-3-5"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-2-5",
+  "payout": 1130,
+  "hit": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
