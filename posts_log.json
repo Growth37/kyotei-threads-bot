@@ -32382,7 +32382,11 @@
    "1-3-2",
    "1-3-4"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-3-4",
+  "payout": 2080,
+  "hit": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
