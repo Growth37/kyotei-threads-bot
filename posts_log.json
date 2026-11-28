@@ -32594,7 +32594,11 @@
    "1-3-2",
    "1-3-5"
   ],
-  "views": {}
+  "views": {},
+  "result": "1-3-5",
+  "payout": 1100,
+  "hit": true,
+  "x_reply_posted": true
  },
  {
   "post_id": null,
